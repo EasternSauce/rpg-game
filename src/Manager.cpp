@@ -35,7 +35,7 @@ void Manager::onLoop(bool pressed[4])
 	{
 		player_list[i].onLoop();
 
-		//door walking code logics...
+		//WALKING THROUGH DOOR LOGIC
 		for(int j = 0; j < (int)door_list.size(); j++)
 		{
 			if(player_list[i].canTP() == false) continue;
@@ -51,7 +51,7 @@ void Manager::onLoop(bool pressed[4])
 				continue;
 			}
 		}
-		//dun
+		//
 	}
 }
 
@@ -92,11 +92,11 @@ void Manager::setCurrentPlayer(int id)
 
 void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 {
-	//set camra ofsets
+	//CAMERA OFFSETS
 	camera.changeView(player_list[current_player_id].getPositionX(), player_list[current_player_id].getPositionY());
-	//dun
+	//
 
-	//draw static laier
+	//DRAW STATIC IMAGERY
 	for(int i = 0; i < level_list[current_level_id].getH(); i++) for(int j = 0; j < level_list[current_level_id].getW(); j++)
 	{
 		char tile = level_list[current_level_id].getTile(j, i);
@@ -113,9 +113,9 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 			window->draw(tree_sprite);
 		}
 	}
-	//dun
+	//
 
-	//draw da doors
+	//DRAW DOORS
 	for(int i = 0; i < (int)door_list.size(); i++)
 	{
 		if(door_list[i].getLevelID() == current_level_id)
@@ -125,9 +125,9 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 			window->draw(door_sprite);
 		}
 	}
-	//dun
+	//
 
-	//draw evry plyr
+	//DRAW PLAYERS
 	for(int i = 0; i < (int)player_list.size(); i++)
 	{
 		if(player_list[i].getLevelID() == current_level_id)
@@ -137,7 +137,7 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 			window->draw(player_sprite);
 		}
 	}
-	//dun
+	//
 }
 
 void Manager::loadPlayers(string file_name)

@@ -19,17 +19,15 @@ void Game::init()
 	mng.loadPlayers("data/players.txt");
 	mng.loadSettings("data/settings.txt");
 	mng.loadDoors("data/doors.txt");
-	//DUUN
+	//
 
-	//SETTING THE WINDUW UP
+	//SETTING THE WINDOW UP
 	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "A role playing game...");
 
 	window.setKeyRepeatEnabled(false);
-	//DUNS
-
+	//
 
 	//LOADING SPRITES
-
 	texture.loadFromFile("data/sheet.png");
 
 	const int number_of_sprites = 24;
@@ -49,8 +47,7 @@ void Game::init()
 			sprites.push_back(sprite);
 		}
 	}
-
-	//DUNN
+	//
 }
 
 void Game::handleEvents()
