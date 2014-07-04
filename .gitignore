@@ -26,3 +26,6 @@ obj/*
 *.cbp
 *.depend
 *.layout
+
+# vim
+*~
