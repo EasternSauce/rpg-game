@@ -29,3 +29,6 @@ obj/*
 
 # vim
 *~
+
+# linux exec
+.exec
