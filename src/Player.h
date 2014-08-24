@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <SFML/System/Clock.hpp>
+#include <string>
 
 #include "Entity.h"
 #include "consts.h"
@@ -17,6 +18,7 @@ private:
 	bool block_tp;
 	int anim_step;
 	sf::Clock anim_clock;
+	std::string message;
 public:
 	Player(int x, int y, int level_id);
 	void onLoop();
@@ -32,6 +34,7 @@ public:
 	bool canTP();
 	void disableTP();
 	int getAnimStep();
+	std::string getMessage();
 };
 
 #endif

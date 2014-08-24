@@ -19,9 +19,10 @@ private:
 	sf::RenderWindow window;
 	sf::Texture texture;
 	sf::Music music;
+	sf::Font font;
 	vector<sf::Sprite> sprites;
 	Manager mng;
-	bool pressed[4];
+	bool pressed[5];
 public:
 	void init();
 	void handleEvents();

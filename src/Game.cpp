@@ -8,10 +8,13 @@ void Game::init()
 	pressed[1] = false;
 	pressed[2] = false;
 	pressed[3] = false;
+	pressed[4] = false;
 
 	music.openFromFile("data/music.wav");
 	music.setLoop(true);
 	music.play();
+
+	font.loadFromFile("data/PressStart2P.ttf");
 
 	//LOADING TXT FILES
 	mng.addLevel(Level("data/level0.txt"));
@@ -19,10 +22,11 @@ void Game::init()
 	mng.loadPlayers("data/players.txt");
 	mng.loadSettings("data/settings.txt");
 	mng.loadDoors("data/doors.txt");
+	mng.setFont(font);
 	//
 
 	//SETTING THE WINDOW UP
-	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "A role playing game...");
+	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT + 100), "A role playing game...");
 
 	window.setKeyRepeatEnabled(false);
 	//
@@ -76,6 +80,10 @@ void Game::handleEvents()
 			{
 				pressed[DOWN] = true;
 			}
+			if(event.key.code == sf::Keyboard::Z)
+			{
+				pressed[ACTION] = true;
+			}
 		}
 		if(event.type == sf::Event::KeyReleased)
 		{
@@ -94,6 +102,10 @@ void Game::handleEvents()
 			if(event.key.code == sf::Keyboard::Down)
 			{
 				pressed[DOWN] = false;
+			}
+			if(event.key.code == sf::Keyboard::Z)
+			{
+				pressed[ACTION] = false;
 			}
 		}
 	}

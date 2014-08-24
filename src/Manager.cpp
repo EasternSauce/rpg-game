@@ -17,7 +17,7 @@ void Manager::addDoor(Door door)
 	door_list.push_back(door);
 }
 
-void Manager::onLoop(bool pressed[4])
+void Manager::onLoop(bool pressed[5])
 {
 	//"AI"
 	int random_dir = rand()%4;
@@ -29,6 +29,19 @@ void Manager::onLoop(bool pressed[4])
 	else if(pressed[RIGHT]) movePlayer(current_player_id, RIGHT);
 	else if(pressed[UP]) movePlayer(current_player_id, UP);
 	else if(pressed[DOWN]) movePlayer(current_player_id, DOWN);
+	else if(pressed[ACTION]) interact();
+	//
+	
+	//getting tile in player's attention
+	attention_tile.x = player_list[current_player_id].getX();
+	attention_tile.y = player_list[current_player_id].getY();
+	switch(player_list[current_player_id].getWalkingDirection())
+	{
+		case LEFT: attention_tile.x--; break;
+		case RIGHT: attention_tile.x++; break;
+		case UP: attention_tile.y--; break;
+		case DOWN: attention_tile.y++; break;
+	}
 	//
 
 	for(int i = 0; i < (int)player_list.size(); i++)
@@ -138,6 +151,25 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 		}
 	}
 	//
+
+	//DRAW INTERFACE
+	sf::RectangleShape interface(sf::Vector2f(WINDOW_WIDTH, 100));
+	interface.setPosition(sf::Vector2f(0, WINDOW_HEIGHT));
+	interface.setFillColor(sf::Color(20, 20, 20));
+	window->draw(interface);
+	if(clock.getElapsedTime() < sf::seconds(5))
+	{
+		sf::Text text;
+		text.setFont(font);
+		text.setString(message);
+		text.setCharacterSize(16);
+		text.setColor(sf::Color(20, 100, 255));
+		text.setPosition(sf::Vector2f(15, WINDOW_HEIGHT+15));
+		window->draw(text);
+	}
+
+	//
+
 }
 
 void Manager::loadPlayers(string file_name)
@@ -168,4 +200,33 @@ void Manager::loadDoors(string file_name)
 	int x, y, loc, dest;
 	while(file >> x >> y >> loc >> dest) addDoor(Door(x,y,loc,dest));
 	file.close();
+}
+
+void Manager::interact()
+{
+	for(int i = 0; i < player_list.size(); i++)
+	{
+		if(i == current_player_id) continue;
+		if(player_list[i].getX() == attention_tile.x && player_list[i].getY() == attention_tile.y)
+		{
+			clock.restart();
+			message = player_list[i].getMessage();
+			Player* npc = &player_list[i];
+			if(npc->isWalking() == false)
+			{
+				switch(player_list[current_player_id].getWalkingDirection())
+				{
+					case LEFT: npc->setWalkingDirection(RIGHT); break;
+					case RIGHT: npc->setWalkingDirection(LEFT); break;
+					case DOWN: npc->setWalkingDirection(UP); break;
+					case UP: npc->setWalkingDirection(DOWN); break;
+				}	
+			}
+		}
+	}
+}
+
+void Manager::setFont(sf::Font font)
+{
+	this->font = font;
 }

@@ -26,12 +26,20 @@ private:
 
 	Camera camera;
 
+	sf::Vector2f attention_tile;
+
+	sf::Font font;
+
+	std::string message;
+
+	sf::Clock clock;
+
 public:
 	void addLevel(Level level);
 	void addPlayer(Player player);
 	void addDoor(Door door);
 
-	void onLoop(bool pressed[4]);
+	void onLoop(bool pressed[5]);
 
 	void movePlayer(int player_id, Direction dir);
 
@@ -43,6 +51,11 @@ public:
 	void loadPlayers(string file_name);
 	void loadSettings(string file_name);
 	void loadDoors(string file_name);
+
+	void interact();
+
+	void setFont(sf::Font font);
+
 };
 
 

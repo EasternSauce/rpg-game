@@ -12,6 +12,7 @@ Player::Player(int x, int y, int level_id)
 	walk_dir = DOWN;
 	block_tp = false;
 	anim_step = 0;
+	message = "Hi there!";
 }
 
 void Player::onLoop()
@@ -117,3 +118,7 @@ int Player::getAnimStep()
 	return anim_step;
 }
 
+std::string Player::getMessage()
+{
+	return message;
+}
