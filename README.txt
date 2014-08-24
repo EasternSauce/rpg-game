@@ -1,1 +1,1 @@
-a generic rpg game using SFML library
+a generic pokemon-inspired amateur rpg game using SFML library
