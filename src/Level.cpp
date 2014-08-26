@@ -3,9 +3,9 @@
 Level::Level(string file_name)
 {
 	ifstream file(file_name.c_str());
-	file >> w;
-	file >> h;
-	for(int i = 0; i < w*h; i++)
+	file >> dim.x;
+	file >> dim.y;
+	for(int i = 0; i < dim.x*dim.y; i++)
 	{
 		char temp;
 		file >> temp;
@@ -14,17 +14,17 @@ Level::Level(string file_name)
 	file.close();
 }
 
-char Level::getTile(int x, int y)
-{
-	return static_layer[y*w + x];
-}
-
 int Level::getW()
 {
-	return w;
+	return dim.x;
 }
 
 int Level::getH()
 {
-	return h;
+	return dim.y;
+}
+
+char Level::getTile(sf::Vector2f pos)
+{
+	return static_layer[pos.y * dim.x + pos.x];
 }

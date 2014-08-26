@@ -1,9 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <fstream>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include <fstream>
 
 #include "Player.h"
 #include "Level.h"
@@ -24,13 +25,15 @@ private:
 	Manager mng;
 	bool pressed[5];
 public:
+	Game();
+
+	bool isWindowOpen();
+
 	void init();
 	void handleEvents();
 	void doLogic();
 	void draw();
 	void exit();
-
-	bool isWindowOpen();
 };
 
 #endif

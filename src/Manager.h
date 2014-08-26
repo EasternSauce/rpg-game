@@ -1,10 +1,11 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
-#include <SFML/Graphics.hpp>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+
+#include <SFML/Graphics.hpp>
 
 #include "consts.h"
 #include "Player.h"
@@ -20,44 +21,32 @@ private:
 	vector<Level> level_list;
 	vector<Player> player_list;
 	vector<Door> door_list;
-
 	int current_level_id;
 	int current_player_id;
-
 	Camera camera;
-
 	sf::Vector2f attention_tile;
-
 	sf::Font font;
-
 	std::string message;
-
 	sf::Clock clock;
-
 public:
-	void addLevel(Level level);
-	void addPlayer(Player player);
-	void addDoor(Door door);
-
-	void onLoop(bool pressed[5]);
-
-	void movePlayer(int player_id, Direction dir);
+	Manager();
 
 	void setCurrentLevel(int id);
 	void setCurrentPlayer(int id);
-
-	void draw(sf::RenderWindow* window, vector<sf::Sprite> sprites);
+	void setFont(sf::Font font);
 
 	void loadPlayers(string file_name);
 	void loadSettings(string file_name);
 	void loadDoors(string file_name);
 
+	void addLevel(Level level);
+	void addPlayer(Player player);
+	void addDoor(Door door);
+
+	void onLoop(bool pressed[5]);
+	void draw(sf::RenderWindow* window, vector<sf::Sprite> sprites);
+	void movePlayer(int player_id, Direction dir);
 	void interact();
-
-	void setFont(sf::Font font);
-
 };
-
-
 
 #endif

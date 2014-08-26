@@ -2,22 +2,22 @@
 
 Camera::Camera()
 {
-	x = 0;
-	y = 0;
-}
-
-void Camera::changeView(int x, int y)
-{
-	this->x = -(x - (WINDOW_WIDTH-TILE_SIZE)/2);
-	this->y = -(y - (WINDOW_HEIGHT-TILE_SIZE)/2);
+	pos.x = 0;
+	pos.y = 0;
 }
 
 int Camera::getX()
 {
-	return x;
+	return pos.x;
 }
 
 int Camera::getY()
 {
-	return y;
+	return pos.y;
+}
+
+void Camera::changeView(int x, int y)
+{
+	pos.x = -(x - (GAME_WIDTH-TILE_SIZE)/2);
+	pos.y = -(y - (GAME_HEIGHT-TILE_SIZE)/2);
 }

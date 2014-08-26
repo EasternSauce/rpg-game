@@ -5,19 +5,23 @@
 #include <string>
 #include <fstream>
 
+#include <SFML/Graphics.hpp>
+
 using namespace std;
 
 class Level
 {
 private:
-	int w, h;
+	sf::Vector2f dim;
 	int id;
 	vector<char> static_layer;
 public:
 	Level(string file_name);
-	char getTile(int x, int y);
+
 	int getW();
 	int getH();
+
+	char getTile(sf::Vector2f pos);
 };
 
 #endif

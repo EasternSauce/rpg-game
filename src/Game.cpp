@@ -1,5 +1,15 @@
 #include "Game.h"
 
+Game::Game()
+{
+	init();
+}
+
+bool Game::isWindowOpen()
+{
+	return window.isOpen();
+}
+
 void Game::init()
 {
 	srand(time(NULL));
@@ -26,7 +36,7 @@ void Game::init()
 	//
 
 	//SETTING THE WINDOW UP
-	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT + 100), "A role playing game...");
+	window.create(sf::VideoMode(GAME_WIDTH, GAME_HEIGHT + 100), "A role playing game...");
 
 	window.setKeyRepeatEnabled(false);
 	//
@@ -124,8 +134,3 @@ void Game::draw()
 }
 
 void Game::exit(){}
-
-bool Game::isWindowOpen()
-{
-	return window.isOpen();
-}

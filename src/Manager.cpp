@@ -1,6 +1,54 @@
 #include "Manager.h"
 
-#include <iostream>
+Manager::Manager()
+{
+
+}
+
+void Manager::setCurrentLevel(int id)
+{
+	current_level_id = id;
+}
+
+void Manager::setCurrentPlayer(int id)
+{
+	current_player_id = id;
+}
+
+void Manager::setFont(sf::Font font)
+{
+	this->font = font;
+}
+
+void Manager::loadPlayers(string file_name)
+{
+	ifstream file(file_name.c_str());
+
+	int x, y, loc;
+	while(file >> x >> y >> loc) addPlayer(Player(sf::Vector2f(x, y), loc));
+	file.close();
+}
+
+void Manager::loadSettings(string file_name)
+{
+	ifstream file(file_name.c_str());
+
+	int temp;
+	file >> temp;
+	setCurrentLevel(temp);
+	file >> temp;
+	setCurrentPlayer(temp);
+	file.close();
+}
+
+void Manager::loadDoors(string file_name)
+{
+	ifstream file(file_name.c_str());
+
+	int x, y, loc, dest;
+	while(file >> x >> y >> loc >> dest) addDoor(Door(sf::Vector2f(x,y), loc, dest));
+	file.close();
+}
 
 void Manager::addLevel(Level level)
 {
@@ -55,10 +103,9 @@ void Manager::onLoop(bool pressed[5])
 			if(player_list[i].getLevelID() == door_list[j].getLevelID() && player_list[i].getX() == door_list[j].getX() && player_list[i].getY() == door_list[j].getY() && player_list[i].getNewX() == door_list[j].getX() && player_list[i].getNewY() == door_list[j].getY())
 			{
 				int dest_id = door_list[j].getDestinationID();
-				int dest_x = door_list[dest_id].getX();
-				int dest_y = door_list[dest_id].getY();
+				sf::Vector2f dest(door_list[dest_id].getX(), door_list[dest_id].getY());
 				int dest_level = door_list[dest_id].getLevelID();
-				player_list[i].teleport(dest_x, dest_y, dest_level);
+				player_list[i].teleport(dest, dest_level);
 				if(current_player_id == i) current_level_id = player_list[i].getLevelID();
 				player_list[i].disableTP();
 				continue;
@@ -66,41 +113,6 @@ void Manager::onLoop(bool pressed[5])
 		}
 		//
 	}
-}
-
-void Manager::movePlayer(int player_id, Direction dir)
-{
-	if(player_list[player_id].isWalking()) return;
-	player_list[player_id].setWalkingDirection(dir);
-	int new_x = player_list[player_id].getX();
-	int new_y = player_list[player_id].getY();
-	if(dir == LEFT) new_x--;
-	else if(dir == RIGHT) new_x++;
-	else if(dir == UP) new_y--;
-	else if(dir == DOWN) new_y++;
-	Level* lvl = &level_list[player_list[player_id].getLevelID()];
-
-	if(lvl->getTile(new_x,new_y) != 'o') return;
-	if(new_x < 0 || new_x >= lvl->getW()) return;
-	if(new_y < 0 || new_y >= lvl->getH()) return;
-	for(int i = 0; i < (int)player_list.size(); i++)
-	{
-		if(i == player_id) continue;
-		if(player_list[player_id].getLevelID() == player_list[i].getLevelID() && new_x == player_list[i].getX() && new_y == player_list[i].getY()) return;
-		if(player_list[player_id].getLevelID() == player_list[i].getLevelID() && new_x == player_list[i].getNewX() && new_y == player_list[i].getNewY()) return;
-	}
-
-	player_list[player_id].move(new_x, new_y);
-}
-
-void Manager::setCurrentLevel(int id)
-{
-	current_level_id = id;
-}
-
-void Manager::setCurrentPlayer(int id)
-{
-	current_player_id = id;
 }
 
 void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
@@ -112,7 +124,7 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 	//DRAW STATIC IMAGERY
 	for(int i = 0; i < level_list[current_level_id].getH(); i++) for(int j = 0; j < level_list[current_level_id].getW(); j++)
 	{
-		char tile = level_list[current_level_id].getTile(j, i);
+		char tile = level_list[current_level_id].getTile(sf::Vector2f(j, i));
 		if(tile == 'o')
 		{
 			sf::Sprite grass_sprite = sprites[GRASS];
@@ -153,8 +165,8 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 	//
 
 	//DRAW INTERFACE
-	sf::RectangleShape interface(sf::Vector2f(WINDOW_WIDTH, 100));
-	interface.setPosition(sf::Vector2f(0, WINDOW_HEIGHT));
+	sf::RectangleShape interface(sf::Vector2f(GAME_WIDTH, 100));
+	interface.setPosition(sf::Vector2f(0, GAME_HEIGHT));
 	interface.setFillColor(sf::Color(20, 20, 20));
 	window->draw(interface);
 	if(clock.getElapsedTime() < sf::seconds(5))
@@ -164,7 +176,7 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 		text.setString(message);
 		text.setCharacterSize(16);
 		text.setColor(sf::Color(20, 100, 255));
-		text.setPosition(sf::Vector2f(15, WINDOW_HEIGHT+15));
+		text.setPosition(sf::Vector2f(15, GAME_HEIGHT+15));
 		window->draw(text);
 	}
 
@@ -172,34 +184,28 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 
 }
 
-void Manager::loadPlayers(string file_name)
+void Manager::movePlayer(int player_id, Direction dir)
 {
-	ifstream file(file_name.c_str());
+	if(player_list[player_id].isWalking()) return;
+	player_list[player_id].setWalkingDirection(dir);
+	sf::Vector2f new_pos(player_list[player_id].getX(), player_list[player_id].getY());
+	if(dir == LEFT) new_pos.x--;
+	else if(dir == RIGHT) new_pos.x++;
+	else if(dir == UP) new_pos.y--;
+	else if(dir == DOWN) new_pos.y++;
+	Level* lvl = &level_list[player_list[player_id].getLevelID()];
 
-	int x, y, loc;
-	while(file >> x >> y >> loc) addPlayer(Player(x, y, loc));
-	file.close();
-}
+	if(lvl->getTile(new_pos) != 'o') return;
+	if(new_pos.x < 0 || new_pos.x >= lvl->getW()) return;
+	if(new_pos.y < 0 || new_pos.y >= lvl->getH()) return;
+	for(int i = 0; i < (int)player_list.size(); i++)
+	{
+		if(i == player_id) continue;
+		if(player_list[player_id].getLevelID() == player_list[i].getLevelID() && new_pos.x == player_list[i].getX() && new_pos.y == player_list[i].getY()) return;
+		if(player_list[player_id].getLevelID() == player_list[i].getLevelID() && new_pos.x == player_list[i].getNewX() && new_pos.y == player_list[i].getNewY()) return;
+	}
 
-void Manager::loadSettings(string file_name)
-{
-	ifstream file(file_name.c_str());
-
-	int temp;
-	file >> temp;
-	setCurrentLevel(temp);
-	file >> temp;
-	setCurrentPlayer(temp);
-	file.close();
-}
-
-void Manager::loadDoors(string file_name)
-{
-	ifstream file(file_name.c_str());
-
-	int x, y, loc, dest;
-	while(file >> x >> y >> loc >> dest) addDoor(Door(x,y,loc,dest));
-	file.close();
+	player_list[player_id].move(sf::Vector2f(new_pos.x, new_pos.y));
 }
 
 void Manager::interact()
@@ -224,9 +230,4 @@ void Manager::interact()
 			}
 		}
 	}
-}
-
-void Manager::setFont(sf::Font font)
-{
-	this->font = font;
 }

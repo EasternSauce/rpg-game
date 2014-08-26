@@ -22,7 +22,7 @@ enum Button
 
 const int TILE_SIZE = 30;
 const int WALK_TIME = 300;
-const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 480;
+const int GAME_WIDTH = 640;
+const int GAME_HEIGHT = 480;
 
 #endif

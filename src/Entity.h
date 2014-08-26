@@ -1,16 +1,21 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <SFML/Graphics.hpp>
+
 class Entity
 {
 protected:
-	int x, y;
+	sf::Vector2f pos;
 	int level_id;
 public:
-	void onLoop();
+	Entity();
+
 	int getX();
 	int getY();
 	int getLevelID();
+
+	void onLoop();
 };
 
 #endif

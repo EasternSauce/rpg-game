@@ -1,21 +1,29 @@
 #include "Entity.h"
 
-void Entity::onLoop()
+Entity::Entity()
 {
-
+	pos = sf::Vector2f(0, 0);
+	level_id = -1;
 }
 
 int Entity::getX()
 {
-	return x;
+	return pos.x;
 }
 
 int Entity::getY()
 {
-	return y;
+	return pos.y;
 }
 
 int Entity::getLevelID()
 {
 	return level_id;
 }
+
+void Entity::onLoop()
+{
+
+}
+
+
