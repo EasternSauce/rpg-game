@@ -1,6 +1,6 @@
-#include "Player.h"
+#include "Character.h"
 
-Player::Player(sf::Vector2f pos, int level_id)
+Character::Character(sf::Vector2f pos, int level_id)
 {
 	this->pos = pos;
 	this->level_id = level_id;
@@ -13,62 +13,62 @@ Player::Player(sf::Vector2f pos, int level_id)
 	message = "Hi there!";
 }
 
-int Player::getNewX()
+int Character::getNewX()
 {
 	return new_pos.x;
 }
 
-int Player::getNewY()
+int Character::getNewY()
 {
 	return new_pos.y;
 }
 
-bool Player::isWalking()
+bool Character::isWalking()
 {
 	return walking;
 }
 
-Direction Player::getWalkingDirection()
+Direction Character::getWalkingDirection()
 {
 	return walk_dir;
 }
 
-void Player::setWalkingDirection(Direction dir)
+void Character::setWalkingDirection(Direction dir)
 {
 	walk_dir = dir;
 }
 
-int Player::getAnimStep()
+int Character::getAnimStep()
 {
 	return anim_step;
 }
 
-std::string Player::getMessage()
+std::string Character::getMessage()
 {
 	return message;
 }
 
-bool Player::canTP()
+bool Character::canTP()
 {
 	return !block_tp;
 }
 
-void Player::disableTP()
+void Character::disableTP()
 {
 	block_tp = true;
 }
 
-int Player::getPositionX()
+int Character::getPositionX()
 {
 	return pos.x * TILE_SIZE + shift.x;
 }
 
-int Player::getPositionY()
+int Character::getPositionY()
 {
 	return pos.y * TILE_SIZE + shift.y;
 }
 
-void Player::onLoop()
+void Character::onLoop()
 {
 	if(walking)
 	{
@@ -99,7 +99,7 @@ void Player::onLoop()
 	}
 }
 
-void Player::move(sf::Vector2f new_pos)
+void Character::move(sf::Vector2f new_pos)
 {
 	walking = true;
 	this->new_pos = new_pos;
@@ -108,7 +108,7 @@ void Player::move(sf::Vector2f new_pos)
 	walk_clock.restart();
 }
 
-void Player::teleport(sf::Vector2f pos, int level_id)
+void Character::teleport(sf::Vector2f pos, int level_id)
 {
 	this->pos = pos;
 	this->new_pos = pos;

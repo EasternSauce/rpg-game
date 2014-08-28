@@ -1,5 +1,7 @@
 #include "Manager.h"
 
+#include <iostream>//
+
 Manager::Manager()
 {
 
@@ -10,9 +12,9 @@ void Manager::setCurrentLevel(int id)
 	current_level_id = id;
 }
 
-void Manager::setCurrentPlayer(int id)
+void Manager::setCurrentCharacter(int id)
 {
-	current_player_id = id;
+	current_character_id = id;
 }
 
 void Manager::setFont(sf::Font font)
@@ -20,12 +22,17 @@ void Manager::setFont(sf::Font font)
 	this->font = font;
 }
 
-void Manager::loadPlayers(string file_name)
+void Manager::loadCharacters(string file_name)
 {
 	ifstream file(file_name.c_str());
 
+	std::cout << "heh:";//
 	int x, y, loc;
-	while(file >> x >> y >> loc) addPlayer(Player(sf::Vector2f(x, y), loc));
+	while(file >> x >> y >> loc)
+	{
+		addCharacter(Character(sf::Vector2f(x, y), loc));
+		std::cout << "|";//
+	}
 	file.close();
 }
 
@@ -37,7 +44,7 @@ void Manager::loadSettings(string file_name)
 	file >> temp;
 	setCurrentLevel(temp);
 	file >> temp;
-	setCurrentPlayer(temp);
+	setCurrentCharacter(temp);
 	file.close();
 }
 
@@ -55,9 +62,9 @@ void Manager::addLevel(Level level)
 	level_list.push_back(level);
 }
 
-void Manager::addPlayer(Player player)
+void Manager::addCharacter(Character character)
 {
-	player_list.push_back(player);
+	character_list.push_back(character);
 }
 
 void Manager::addDoor(Door door)
@@ -65,25 +72,26 @@ void Manager::addDoor(Door door)
 	door_list.push_back(door);
 }
 
-void Manager::onLoop(bool pressed[5])
+void Manager::doLogic(bool pressed[NUMBER_OF_BUTTONS])
 {
+	//std::cout << character_list.size() << std::endl;
 	//"AI"
 	int random_dir = rand()%4;
-	movePlayer(1, (Direction)random_dir);
+	moveCharacter(1, (Direction)random_dir);
 	//
 
-	//move players according to buttons pressed
-	if(pressed[LEFT]) movePlayer(current_player_id, LEFT);
-	else if(pressed[RIGHT]) movePlayer(current_player_id, RIGHT);
-	else if(pressed[UP]) movePlayer(current_player_id, UP);
-	else if(pressed[DOWN]) movePlayer(current_player_id, DOWN);
+	//move characters according to buttons pressed
+	if(pressed[LEFT]) moveCharacter(current_character_id, LEFT);
+	else if(pressed[RIGHT]) moveCharacter(current_character_id, RIGHT);
+	else if(pressed[UP]) moveCharacter(current_character_id, UP);
+	else if(pressed[DOWN]) moveCharacter(current_character_id, DOWN);
 	else if(pressed[ACTION]) interact();
 	//
 	
-	//getting tile in player's attention
-	attention_tile.x = player_list[current_player_id].getX();
-	attention_tile.y = player_list[current_player_id].getY();
-	switch(player_list[current_player_id].getWalkingDirection())
+	//getting tile in character's attention
+	attention_tile.x = character_list[current_character_id].getX();
+	attention_tile.y = character_list[current_character_id].getY();
+	switch(character_list[current_character_id].getWalkingDirection())
 	{
 		case LEFT: attention_tile.x--; break;
 		case RIGHT: attention_tile.x++; break;
@@ -92,22 +100,22 @@ void Manager::onLoop(bool pressed[5])
 	}
 	//
 
-	for(int i = 0; i < (int)player_list.size(); i++)
+	for(int i = 0; i < (int)character_list.size(); i++)
 	{
-		player_list[i].onLoop();
+		character_list[i].onLoop();
 
 		//WALKING THROUGH DOOR LOGIC
 		for(int j = 0; j < (int)door_list.size(); j++)
 		{
-			if(player_list[i].canTP() == false) continue;
-			if(player_list[i].getLevelID() == door_list[j].getLevelID() && player_list[i].getX() == door_list[j].getX() && player_list[i].getY() == door_list[j].getY() && player_list[i].getNewX() == door_list[j].getX() && player_list[i].getNewY() == door_list[j].getY())
+			if(character_list[i].canTP() == false) continue;
+			if(character_list[i].getLevelID() == door_list[j].getLevelID() && character_list[i].getX() == door_list[j].getX() && character_list[i].getY() == door_list[j].getY() && character_list[i].getNewX() == door_list[j].getX() && character_list[i].getNewY() == door_list[j].getY())
 			{
 				int dest_id = door_list[j].getDestinationID();
 				sf::Vector2f dest(door_list[dest_id].getX(), door_list[dest_id].getY());
 				int dest_level = door_list[dest_id].getLevelID();
-				player_list[i].teleport(dest, dest_level);
-				if(current_player_id == i) current_level_id = player_list[i].getLevelID();
-				player_list[i].disableTP();
+				character_list[i].teleport(dest, dest_level);
+				if(current_character_id == i) current_level_id = character_list[i].getLevelID();
+				character_list[i].disableTP();
 				continue;
 			}
 		}
@@ -118,7 +126,7 @@ void Manager::onLoop(bool pressed[5])
 void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 {
 	//CAMERA OFFSETS
-	camera.changeView(player_list[current_player_id].getPositionX(), player_list[current_player_id].getPositionY());
+	camera.changeView(character_list[current_character_id].getPositionX(), character_list[current_character_id].getPositionY());
 	//
 
 	//DRAW STATIC IMAGERY
@@ -152,14 +160,14 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 	}
 	//
 
-	//DRAW PLAYERS
-	for(int i = 0; i < (int)player_list.size(); i++)
+	//DRAW CHARACTERS
+	for(int i = 0; i < (int)character_list.size(); i++)
 	{
-		if(player_list[i].getLevelID() == current_level_id)
+		if(character_list[i].getLevelID() == current_level_id)
 		{
-			sf::Sprite player_sprite = sprites[PLAYER+player_list[i].getWalkingDirection()*5+player_list[i].getAnimStep()];
-			player_sprite.setPosition(sf::Vector2f(player_list[i].getPositionX()+camera.getX(), player_list[i].getPositionY()+camera.getY()));
-			window->draw(player_sprite);
+			sf::Sprite character_sprite = sprites[CHARACTER+character_list[i].getWalkingDirection()*5+character_list[i].getAnimStep()];
+			character_sprite.setPosition(sf::Vector2f(character_list[i].getPositionX()+camera.getX(), character_list[i].getPositionY()+camera.getY()));
+			window->draw(character_sprite);
 		}
 	}
 	//
@@ -184,43 +192,43 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 
 }
 
-void Manager::movePlayer(int player_id, Direction dir)
+void Manager::moveCharacter(int character_id, Direction dir)
 {
-	if(player_list[player_id].isWalking()) return;
-	player_list[player_id].setWalkingDirection(dir);
-	sf::Vector2f new_pos(player_list[player_id].getX(), player_list[player_id].getY());
+	if(character_list[character_id].isWalking()) return;
+	character_list[character_id].setWalkingDirection(dir);
+	sf::Vector2f new_pos(character_list[character_id].getX(), character_list[character_id].getY());
 	if(dir == LEFT) new_pos.x--;
 	else if(dir == RIGHT) new_pos.x++;
 	else if(dir == UP) new_pos.y--;
 	else if(dir == DOWN) new_pos.y++;
-	Level* lvl = &level_list[player_list[player_id].getLevelID()];
+	Level* lvl = &level_list[character_list[character_id].getLevelID()];
 
 	if(lvl->getTile(new_pos) != 'o') return;
 	if(new_pos.x < 0 || new_pos.x >= lvl->getW()) return;
 	if(new_pos.y < 0 || new_pos.y >= lvl->getH()) return;
-	for(int i = 0; i < (int)player_list.size(); i++)
+	for(int i = 0; i < (int)character_list.size(); i++)
 	{
-		if(i == player_id) continue;
-		if(player_list[player_id].getLevelID() == player_list[i].getLevelID() && new_pos.x == player_list[i].getX() && new_pos.y == player_list[i].getY()) return;
-		if(player_list[player_id].getLevelID() == player_list[i].getLevelID() && new_pos.x == player_list[i].getNewX() && new_pos.y == player_list[i].getNewY()) return;
+		if(i == character_id) continue;
+		if(character_list[character_id].getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getX() && new_pos.y == character_list[i].getY()) return;
+		if(character_list[character_id].getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getNewX() && new_pos.y == character_list[i].getNewY()) return;
 	}
 
-	player_list[player_id].move(sf::Vector2f(new_pos.x, new_pos.y));
+	character_list[character_id].move(sf::Vector2f(new_pos.x, new_pos.y));
 }
 
 void Manager::interact()
 {
-	for(int i = 0; i < player_list.size(); i++)
+	for(int i = 0; i < character_list.size(); i++)
 	{
-		if(i == current_player_id) continue;
-		if(player_list[i].getX() == attention_tile.x && player_list[i].getY() == attention_tile.y)
+		if(i == current_character_id) continue;
+		if(character_list[i].getX() == attention_tile.x && character_list[i].getY() == attention_tile.y)
 		{
 			clock.restart();
-			message = player_list[i].getMessage();
-			Player* npc = &player_list[i];
+			message = character_list[i].getMessage();
+			Character* npc = &character_list[i];
 			if(npc->isWalking() == false)
 			{
-				switch(player_list[current_player_id].getWalkingDirection())
+				switch(character_list[current_character_id].getWalkingDirection())
 				{
 					case LEFT: npc->setWalkingDirection(RIGHT); break;
 					case RIGHT: npc->setWalkingDirection(LEFT); break;

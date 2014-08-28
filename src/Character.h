@@ -1,5 +1,5 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef CHARACTER_H
+#define CHARACTER_H
 
 #include <string>
 
@@ -8,7 +8,7 @@
 #include "Entity.h"
 #include "consts.h"
 
-class Player : public Entity
+class Character : public Entity
 {
 private:
 	sf::Vector2f new_pos;
@@ -21,7 +21,7 @@ private:
 	sf::Clock anim_clock;
 	std::string message;
 public:
-	Player(sf::Vector2f pos, int level_id);
+	Character(sf::Vector2f pos, int level_id);
 
 	int getNewX();
 	int getNewY();

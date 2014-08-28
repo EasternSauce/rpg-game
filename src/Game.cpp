@@ -14,22 +14,21 @@ void Game::init()
 {
 	srand(time(NULL));
 
-	pressed[0] = false;
-	pressed[1] = false;
-	pressed[2] = false;
-	pressed[3] = false;
-	pressed[4] = false;
+	for(int i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		pressed[i] = false;
+	}
 
 	music.openFromFile("data/music.wav");
 	music.setLoop(true);
 	music.play();
 
-	font.loadFromFile("data/PressStart2P.ttf");
+	font.loadFromFile("data/fixedsys.ttf");
 
 	//LOADING TXT FILES
 	mng.addLevel(Level("data/level0.txt"));
 	mng.addLevel(Level("data/level1.txt"));
-	mng.loadPlayers("data/players.txt");
+	mng.loadCharacters("data/characters.txt");
 	mng.loadSettings("data/settings.txt");
 	mng.loadDoors("data/doors.txt");
 	mng.setFont(font);
@@ -48,7 +47,11 @@ void Game::init()
 
 	int sprite_rects[number_of_sprites] =
 	{
-		5, 5, 5, 5, 4
+		5, //number of sprites in row 1 of the spritesheet
+	   	5, //number of sprites in row 2 of the spritesheet
+	   	5, //number of sprites in row 3 of the spritesheet
+	   	5, //number of sprites in row 4 of the spritesheet
+	   	4  //number of sprites in row 5 of the spritesheet
 	};
 
 	for(int i = 0; i < number_of_sprites; i++)
@@ -123,7 +126,7 @@ void Game::handleEvents()
 
 void Game::doLogic()
 {
-	mng.onLoop(pressed);
+	mng.doLogic(pressed);
 }
 
 void Game::draw()

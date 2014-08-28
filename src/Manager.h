@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "consts.h"
-#include "Player.h"
+#include "Character.h"
 #include "Level.h"
 #include "Door.h"
 #include "Camera.h"
@@ -19,10 +19,10 @@ class Manager
 {
 private:
 	vector<Level> level_list;
-	vector<Player> player_list;
+	vector<Character> character_list;
 	vector<Door> door_list;
 	int current_level_id;
-	int current_player_id;
+	int current_character_id;
 	Camera camera;
 	sf::Vector2f attention_tile;
 	sf::Font font;
@@ -32,20 +32,20 @@ public:
 	Manager();
 
 	void setCurrentLevel(int id);
-	void setCurrentPlayer(int id);
+	void setCurrentCharacter(int id);
 	void setFont(sf::Font font);
 
-	void loadPlayers(string file_name);
+	void loadCharacters(string file_name);
 	void loadSettings(string file_name);
 	void loadDoors(string file_name);
 
 	void addLevel(Level level);
-	void addPlayer(Player player);
+	void addCharacter(Character character);
 	void addDoor(Door door);
 
-	void onLoop(bool pressed[5]);
+	void doLogic(bool pressed[NUMBER_OF_BUTTONS]);
 	void draw(sf::RenderWindow* window, vector<sf::Sprite> sprites);
-	void movePlayer(int player_id, Direction dir);
+	void moveCharacter(int character_id, Direction dir);
 	void interact();
 };
 

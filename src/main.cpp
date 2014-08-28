@@ -5,7 +5,6 @@ using namespace std;
 int main()
 {
 	Game game;
-	game.init();
 	while(game.isWindowOpen())
 	{
 		game.handleEvents();

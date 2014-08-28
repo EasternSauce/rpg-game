@@ -6,7 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "Player.h"
+#include "Character.h"
 #include "Level.h"
 #include "Manager.h"
 #include "Camera.h"
