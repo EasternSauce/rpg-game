@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Entity.h"
+#include "Timer.h"
 #include "consts.h"
 
 class Character : public Entity
@@ -14,24 +15,22 @@ private:
 	sf::Vector2f new_pos;
 	sf::Vector2f shift;
 	bool walking;
-	sf::Clock walk_clock;
+	Timer walk_timer;
 	Direction walk_dir;
 	bool block_tp;
 	int anim_step;
-	sf::Clock anim_clock;
+	Timer anim_timer;
 	std::string message;
 	std::string name;
 public:
 	Character(sf::Vector2f pos, int level_id, std::string name);
 
-	int getX();
-	int getY();
+	int getNewX();
+	int getNewY();
 	int getShiftX();
 	int getShiftY();
 	sf::Vector2f* getPosHandle();
 	sf::Vector2f* getShiftHandle();
-	int getNewX();
-	int getNewY();
 	bool isWalking();
 	Direction getWalkingDirection();
 	void setWalkingDirection(Direction dir);
@@ -45,6 +44,8 @@ public:
 	void onLoop();
 	void move(sf::Vector2f new_pos);
 	void teleport(sf::Vector2f pos, int level_id);
+	void pauseTimers();
+	void resumeTimers();
 };
 
 #endif

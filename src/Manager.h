@@ -13,10 +13,12 @@
 #include "Level.h"
 #include "Door.h"
 #include "Camera.h"
+#include "Timer.h"
 
 class Manager
 {
 private:
+	State state;
 	vector<Level> level_list;
 	vector<Character> character_list;
 	vector<Door> door_list;
@@ -26,7 +28,7 @@ private:
 	sf::Vector2f attention_tile;
 	sf::Font font;
 	std::string message;
-	sf::Clock clock;
+	Timer msg_cd;
 public:
 	Manager();
 

@@ -8,22 +8,22 @@ Character::Character(sf::Vector2f pos, int level_id, std::string name)
 	new_pos = sf::Vector2f(0, 0);
 	shift = sf::Vector2f(0, 0);
 	walking = false;
-	walk_clock.restart();
+	walk_timer.restart();
 	walk_dir = DOWN;
 	block_tp = false;
 	anim_step = 0;
-	anim_clock.restart();
+	anim_timer.restart();
 	message = "Hi there!";
 }
 
-int Character::getX()
+int Character::getNewX()
 {
-	return pos.x;
+	return new_pos.x;
 }
 
-int Character::getY()
+int Character::getNewY()
 {
-	return pos.y;
+	return new_pos.y;
 }
 
 int Character::getShiftX()
@@ -44,16 +44,6 @@ sf::Vector2f* Character::getPosHandle()
 sf::Vector2f* Character::getShiftHandle()
 {
 	return &shift;
-}
-
-int Character::getNewX()
-{
-	return new_pos.x;
-}
-
-int Character::getNewY()
-{
-	return new_pos.y;
 }
 
 bool Character::isWalking()
@@ -100,20 +90,20 @@ void Character::onLoop()
 {
 	if(walking)
 	{
-		sf::Time time = walk_clock.getElapsedTime();
-		float multiplier = (float)time.asMilliseconds()/WALK_TIME;
-		if(anim_clock.getElapsedTime() >= sf::milliseconds(60))
+		sf::Time time = walk_timer.getTime();
+		float multiplier = (float)time.asMilliseconds() / WALK_TIME;
+		if(anim_timer.getTime() >= sf::milliseconds(60))
 		{
-			anim_step = anim_step%4+1;
-			anim_clock.restart();
+			anim_step = anim_step % 4 + 1;
+			anim_timer.restart();
 		}
 
 
 		shift = sf::Vector2f(0, 0);
-		if(walk_dir == LEFT) shift.x = -TILE_SIZE*multiplier;
-		if(walk_dir == RIGHT) shift.x = TILE_SIZE*multiplier;
-		if(walk_dir == UP) shift.y = -TILE_SIZE*multiplier;
-		if(walk_dir == DOWN) shift.y = TILE_SIZE*multiplier;
+		if(walk_dir == LEFT) shift.x = -TILE_SIZE * multiplier;
+		if(walk_dir == RIGHT) shift.x = TILE_SIZE * multiplier;
+		if(walk_dir == UP) shift.y = -TILE_SIZE * multiplier;
+		if(walk_dir == DOWN) shift.y = TILE_SIZE * multiplier;
 
 		if(time >= sf::milliseconds(WALK_TIME))
 		{
@@ -122,7 +112,7 @@ void Character::onLoop()
 			pos = new_pos;
 			shift = sf::Vector2f(0, 0);
 			anim_step = 0;
-			anim_clock.restart();
+			anim_timer.restart();
 		}
 	}
 }
@@ -133,7 +123,7 @@ void Character::move(sf::Vector2f new_pos)
 	this->new_pos = new_pos;
 	block_tp = false;
 
-	walk_clock.restart();
+	walk_timer.restart();
 }
 
 void Character::teleport(sf::Vector2f pos, int level_id)
@@ -143,3 +133,14 @@ void Character::teleport(sf::Vector2f pos, int level_id)
 	this->level_id = level_id;
 }
 
+void Character::pauseTimers()
+{
+	anim_timer.pause();
+	walk_timer.pause();
+}
+
+void Character::resumeTimers()
+{
+	anim_timer.resume();
+	walk_timer.resume();
+}

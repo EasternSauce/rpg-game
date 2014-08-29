@@ -17,7 +17,8 @@ enum Direction
 
 enum Button
 {
-	ACTION = 4
+	ACTION = 4,
+	PAUSE
 };
 
 const int TILE_SIZE = 30;
@@ -26,5 +27,13 @@ const int GAME_WIDTH = 640;
 const int GAME_HEIGHT = 480;
 
 const int NUMBER_OF_BUTTONS = 30;
+
+enum State
+{
+	MENU,
+	GAME,
+	INVENTORY,
+	BATTLE
+};
 
 #endif

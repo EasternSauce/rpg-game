@@ -77,6 +77,7 @@ void Game::handleEvents()
 {
 	sf::Event event;
 
+	pressed[PAUSE] = false;
 	while(window.pollEvent(event))
 	{
 		if(event.type == sf::Event::Closed) window.close();
@@ -102,6 +103,10 @@ void Game::handleEvents()
 			if(event.key.code == sf::Keyboard::Z)
 			{
 				pressed[ACTION] = true;
+			}
+			if(event.key.code == sf::Keyboard::P)
+			{
+				pressed[PAUSE] = true;
 			}
 		}
 		if(event.type == sf::Event::KeyReleased)
