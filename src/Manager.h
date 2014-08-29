@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <string>
 
 #include <SFML/Graphics.hpp>
 
@@ -12,8 +13,6 @@
 #include "Level.h"
 #include "Door.h"
 #include "Camera.h"
-
-using namespace std;
 
 class Manager
 {

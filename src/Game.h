@@ -12,8 +12,6 @@
 #include "Camera.h"
 #include "consts.h"
 
-using namespace std;
-
 class Game
 {
 private:
@@ -23,7 +21,7 @@ private:
 	sf::Font font;
 	vector<sf::Sprite> sprites;
 	Manager mng;
-	bool pressed[5];
+	bool pressed[NUMBER_OF_BUTTONS];
 public:
 	Game();
 

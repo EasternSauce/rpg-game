@@ -1,16 +1,49 @@
 #include "Character.h"
 
-Character::Character(sf::Vector2f pos, int level_id)
+Character::Character(sf::Vector2f pos, int level_id, std::string name)
 {
 	this->pos = pos;
 	this->level_id = level_id;
+	this->name = name;
+	new_pos = sf::Vector2f(0, 0);
 	shift = sf::Vector2f(0, 0);
 	walking = false;
 	walk_clock.restart();
 	walk_dir = DOWN;
 	block_tp = false;
 	anim_step = 0;
+	anim_clock.restart();
 	message = "Hi there!";
+}
+
+int Character::getX()
+{
+	return pos.x;
+}
+
+int Character::getY()
+{
+	return pos.y;
+}
+
+int Character::getShiftX()
+{
+	return shift.x;
+}
+
+int Character::getShiftY()
+{
+	return shift.y;
+}
+
+sf::Vector2f* Character::getPosHandle()
+{
+	return &pos;
+}
+
+sf::Vector2f* Character::getShiftHandle()
+{
+	return &shift;
 }
 
 int Character::getNewX()
@@ -48,6 +81,11 @@ std::string Character::getMessage()
 	return message;
 }
 
+std::string Character::getName()
+{
+	return name;
+}
+
 bool Character::canTP()
 {
 	return !block_tp;
@@ -56,16 +94,6 @@ bool Character::canTP()
 void Character::disableTP()
 {
 	block_tp = true;
-}
-
-int Character::getPositionX()
-{
-	return pos.x * TILE_SIZE + shift.x;
-}
-
-int Character::getPositionY()
-{
-	return pos.y * TILE_SIZE + shift.y;
 }
 
 void Character::onLoop()

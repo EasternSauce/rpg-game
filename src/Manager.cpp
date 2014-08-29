@@ -1,10 +1,10 @@
 #include "Manager.h"
 
-#include <iostream>//
-
 Manager::Manager()
 {
-
+	current_character_id = 0;
+	current_level_id = 0;
+	attention_tile = sf::Vector2f(0, 0);
 }
 
 void Manager::setCurrentLevel(int id)
@@ -26,14 +26,15 @@ void Manager::loadCharacters(string file_name)
 {
 	ifstream file(file_name.c_str());
 
-	std::cout << "heh:";//
 	int x, y, loc;
-	while(file >> x >> y >> loc)
+	std::string name;
+	while(file >> x >> y >> loc >> name)
 	{
-		addCharacter(Character(sf::Vector2f(x, y), loc));
-		std::cout << "|";//
+		addCharacter(Character(sf::Vector2f(x, y), loc, name));
 	}
 	file.close();
+
+	camera.setHandles(character_list[current_character_id].getPosHandle(), character_list[current_character_id].getShiftHandle());
 }
 
 void Manager::loadSettings(string file_name)
@@ -74,7 +75,6 @@ void Manager::addDoor(Door door)
 
 void Manager::doLogic(bool pressed[NUMBER_OF_BUTTONS])
 {
-	//std::cout << character_list.size() << std::endl;
 	//"AI"
 	int random_dir = rand()%4;
 	moveCharacter(1, (Direction)random_dir);
@@ -125,10 +125,6 @@ void Manager::doLogic(bool pressed[NUMBER_OF_BUTTONS])
 
 void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 {
-	//CAMERA OFFSETS
-	camera.changeView(character_list[current_character_id].getPositionX(), character_list[current_character_id].getPositionY());
-	//
-
 	//DRAW STATIC IMAGERY
 	for(int i = 0; i < level_list[current_level_id].getH(); i++) for(int j = 0; j < level_list[current_level_id].getW(); j++)
 	{
@@ -136,13 +132,13 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 		if(tile == 'o')
 		{
 			sf::Sprite grass_sprite = sprites[GRASS];
-			grass_sprite.setPosition(sf::Vector2f(j*TILE_SIZE+camera.getX(),i*TILE_SIZE+camera.getY()));
+			grass_sprite.setPosition(sf::Vector2f(j * TILE_SIZE - camera.getOffsetX(), i * TILE_SIZE - camera.getOffsetY()));
 			window->draw(grass_sprite);
 		}
 		if(tile == 't')
 		{
 			sf::Sprite tree_sprite = sprites[TREE];
-			tree_sprite.setPosition(sf::Vector2f(j*TILE_SIZE+camera.getX(),i*TILE_SIZE+camera.getY()));
+			tree_sprite.setPosition(sf::Vector2f(j * TILE_SIZE - camera.getOffsetX(), i * TILE_SIZE - camera.getOffsetY()));
 			window->draw(tree_sprite);
 		}
 	}
@@ -154,7 +150,7 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 		if(door_list[i].getLevelID() == current_level_id)
 		{
 			sf::Sprite door_sprite = sprites[DOOR];
-			door_sprite.setPosition(sf::Vector2f(door_list[i].getX()*TILE_SIZE+camera.getX(), door_list[i].getY()*TILE_SIZE+camera.getY()));
+			door_sprite.setPosition(sf::Vector2f(door_list[i].getX() * TILE_SIZE - camera.getOffsetX(), door_list[i].getY() * TILE_SIZE - camera.getOffsetY()));
 			window->draw(door_sprite);
 		}
 	}
@@ -165,8 +161,10 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 	{
 		if(character_list[i].getLevelID() == current_level_id)
 		{
-			sf::Sprite character_sprite = sprites[CHARACTER+character_list[i].getWalkingDirection()*5+character_list[i].getAnimStep()];
-			character_sprite.setPosition(sf::Vector2f(character_list[i].getPositionX()+camera.getX(), character_list[i].getPositionY()+camera.getY()));
+			Character c_char = character_list[i];
+			sf::Sprite character_sprite = sprites[CHARACTER+c_char.getWalkingDirection() * 5 + c_char.getAnimStep()];
+			sf::Vector2f real_pos = sf::Vector2f(c_char.getX() * TILE_SIZE + c_char.getShiftX(), c_char.getY() * TILE_SIZE + c_char.getShiftY());
+			character_sprite.setPosition(sf::Vector2f(real_pos.x - camera.getOffsetX(), real_pos.y - camera.getOffsetY()));
 			window->draw(character_sprite);
 		}
 	}
@@ -218,13 +216,14 @@ void Manager::moveCharacter(int character_id, Direction dir)
 
 void Manager::interact()
 {
-	for(int i = 0; i < character_list.size(); i++)
+	for(int i = 0; i < (int)character_list.size(); i++)
 	{
 		if(i == current_character_id) continue;
 		if(character_list[i].getX() == attention_tile.x && character_list[i].getY() == attention_tile.y)
 		{
 			clock.restart();
-			message = character_list[i].getMessage();
+			message = character_list[i].getName() + ": " + character_list[i].getMessage();
+
 			Character* npc = &character_list[i];
 			if(npc->isWalking() == false)
 			{

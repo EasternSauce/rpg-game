@@ -12,17 +12,24 @@ class Character : public Entity
 {
 private:
 	sf::Vector2f new_pos;
+	sf::Vector2f shift;
 	bool walking;
 	sf::Clock walk_clock;
-	sf::Vector2f shift;
 	Direction walk_dir;
 	bool block_tp;
 	int anim_step;
 	sf::Clock anim_clock;
 	std::string message;
+	std::string name;
 public:
-	Character(sf::Vector2f pos, int level_id);
+	Character(sf::Vector2f pos, int level_id, std::string name);
 
+	int getX();
+	int getY();
+	int getShiftX();
+	int getShiftY();
+	sf::Vector2f* getPosHandle();
+	sf::Vector2f* getShiftHandle();
 	int getNewX();
 	int getNewY();
 	bool isWalking();
@@ -30,11 +37,10 @@ public:
 	void setWalkingDirection(Direction dir);
 	int getAnimStep();
 	std::string getMessage();
+	std::string getName();
 
 	bool canTP();
 	void disableTP();
-	int getPositionX();
-	int getPositionY();
 
 	void onLoop();
 	void move(sf::Vector2f new_pos);

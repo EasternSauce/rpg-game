@@ -2,6 +2,11 @@
 
 Game::Game()
 {
+	for(int i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		pressed[i] = false;
+	}
+
 	init();
 }
 
@@ -38,6 +43,7 @@ void Game::init()
 	window.create(sf::VideoMode(GAME_WIDTH, GAME_HEIGHT + 100), "A role playing game...");
 
 	window.setKeyRepeatEnabled(false);
+	window.setVerticalSyncEnabled(true);
 	//
 
 	//LOADING SPRITES

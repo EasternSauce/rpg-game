@@ -8,14 +8,15 @@
 class Camera
 {
 private:
-	sf::Vector2f pos;
+	sf::Vector2f* pos;
+	sf::Vector2f* shift;
 public:
 	Camera();
 
-	int getX();
-	int getY();
+	int getOffsetX();
+	int getOffsetY();
 
-	void changeView(int x, int y);
+	void setHandles(sf::Vector2f* pos, sf::Vector2f* shift);
 };
 
 #endif

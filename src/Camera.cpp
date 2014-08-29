@@ -2,22 +2,21 @@
 
 Camera::Camera()
 {
-	pos.x = 0;
-	pos.y = 0;
+	pos = NULL;
 }
 
-int Camera::getX()
+int Camera::getOffsetX()
 {
-	return pos.x;
+	return pos->x * TILE_SIZE + shift->x - (GAME_WIDTH - TILE_SIZE)/2;
 }
 
-int Camera::getY()
+int Camera::getOffsetY()
 {
-	return pos.y;
+	return pos->y * TILE_SIZE + shift->y - (GAME_HEIGHT - TILE_SIZE)/2;
 }
 
-void Camera::changeView(int x, int y)
+void Camera::setHandles(sf::Vector2f* pos, sf::Vector2f* shift)
 {
-	pos.x = -(x - (GAME_WIDTH-TILE_SIZE)/2);
-	pos.y = -(y - (GAME_HEIGHT-TILE_SIZE)/2);
+	this->pos = pos;
+	this->shift = shift;
 }
