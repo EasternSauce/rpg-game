@@ -14,8 +14,6 @@ public:
 	Door(sf::Vector2f pos, int level_id, int door_id_destination);
 
 	int getDestinationID();
-
-	void onLoop();
 };
 
 #endif

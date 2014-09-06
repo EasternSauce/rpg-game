@@ -12,10 +12,8 @@ private:
 	sf::Vector2f* shift;
 public:
 	Camera();
-
 	int getOffsetX();
 	int getOffsetY();
-
 	void setHandles(sf::Vector2f* pos, sf::Vector2f* shift);
 };
 

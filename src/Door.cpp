@@ -10,8 +10,3 @@ int Door::getDestinationID()
 {
 	return destination_id;
 }
-
-void Door::onLoop()
-{
-
-}

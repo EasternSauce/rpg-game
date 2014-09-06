@@ -6,6 +6,12 @@ Timer::Timer()
 	restart();
 }
 
+sf::Time Timer::getTime()
+{
+	if(!paused) return clock.getElapsedTime() - time_started;
+	else return time_paused - time_started;
+}
+
 void Timer::restart()
 {
 	time_started = clock.getElapsedTime();
@@ -28,10 +34,4 @@ void Timer::resume()
 		time_started = clock.getElapsedTime() - (time_paused - time_started);
 		paused = false;
 	}
-}
-
-sf::Time Timer::getTime()
-{
-	if(!paused) return clock.getElapsedTime() - time_started;
-	else return time_paused - time_started;
 }

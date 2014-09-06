@@ -14,8 +14,6 @@ public:
 	int getX();
 	int getY();
 	int getLevelID();
-
-	void onLoop();
 };
 
 #endif

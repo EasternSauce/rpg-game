@@ -11,12 +11,14 @@ private:
 	int current_element;
 public:
 	Menu();
-	void addElement(std::string element);
-	std::string getElement(int n);
+
 	int getSize();
+	int getCurrentElementID();
+	std::string getElement(int n);
+
+	void addElement(std::string element);
 	void goUp();
 	void goDown();
-	int getCurrentElement();
 };
 
 #endif

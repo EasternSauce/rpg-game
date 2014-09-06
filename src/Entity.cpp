@@ -3,7 +3,7 @@
 Entity::Entity()
 {
 	pos = sf::Vector2f(0, 0);
-	level_id = -1;
+	level_id = 0;
 }
 
 int Entity::getX()
@@ -20,10 +20,3 @@ int Entity::getLevelID()
 {
 	return level_id;
 }
-
-void Entity::onLoop()
-{
-
-}
-
-

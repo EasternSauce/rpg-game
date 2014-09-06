@@ -37,7 +37,6 @@ public:
 	int getAnimStep();
 	std::string getMessage();
 	std::string getName();
-
 	bool canTP();
 
 	void onLoop();

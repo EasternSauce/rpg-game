@@ -12,10 +12,12 @@ class Timer
 		bool paused;
 	public:
 		Timer();
+
+		sf::Time getTime();
+
 		void restart();
 		void pause();
 		void resume();
-		sf::Time getTime();
 };
 
 #endif
