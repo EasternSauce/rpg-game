@@ -13,16 +13,16 @@ class Character : public Entity
 {
 private:
 	sf::Vector2f new_pos;
-	sf::Vector2f shift;
 	bool walking;
-	Timer walk_timer;
 	Direction walk_dir;
 	bool block_tp;
 	int anim_step;
-	Timer anim_timer;
 	std::string message;
 	std::string name;
 public:
+	Timer walk_timer;
+	Timer anim_timer;
+	sf::Vector2f shift;
 	Character(sf::Vector2f pos, int level_id, std::string name);
 
 	int getNewX();
@@ -39,7 +39,6 @@ public:
 	std::string getName();
 
 	bool canTP();
-	void disableTP();
 
 	void onLoop();
 	void move(sf::Vector2f new_pos);

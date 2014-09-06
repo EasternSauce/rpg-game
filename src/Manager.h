@@ -14,6 +14,7 @@
 #include "Door.h"
 #include "Camera.h"
 #include "Timer.h"
+#include "Menu.h"
 
 class Manager
 {
@@ -28,13 +29,14 @@ private:
 	sf::Vector2f attention_tile;
 	sf::Font font;
 	std::string message;
-	Timer msg_cd;
+	Menu main_menu;
 public:
 	Manager();
 
 	void setCurrentLevel(int id);
 	void setCurrentCharacter(int id);
 	void setFont(sf::Font font);
+	void setMainMenu(Menu main_menu);
 
 	void loadCharacters(string file_name);
 	void loadSettings(string file_name);

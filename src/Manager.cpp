@@ -23,25 +23,26 @@ void Manager::setFont(sf::Font font)
 	this->font = font;
 }
 
+void Manager::setMainMenu(Menu main_menu)
+{
+	this->main_menu = main_menu;
+}
+
 void Manager::loadCharacters(string file_name)
 {
 	ifstream file(file_name.c_str());
-
 	int x, y, loc;
 	std::string name;
-	while(file >> x >> y >> loc >> name)
-	{
-		addCharacter(Character(sf::Vector2f(x, y), loc, name));
-	}
+	while(file >> x >> y >> loc >> name) addCharacter(Character(sf::Vector2f(x, y), loc, name));
 	file.close();
 
-	camera.setHandles(character_list[current_character_id].getPosHandle(), character_list[current_character_id].getShiftHandle());
+	Character* cchar = &character_list[current_character_id];
+	camera.setHandles(cchar->getPosHandle(), cchar->getShiftHandle());
 }
 
 void Manager::loadSettings(string file_name)
 {
 	ifstream file(file_name.c_str());
-
 	int temp;
 	file >> temp;
 	setCurrentLevel(temp);
@@ -53,7 +54,6 @@ void Manager::loadSettings(string file_name)
 void Manager::loadDoors(string file_name)
 {
 	ifstream file(file_name.c_str());
-
 	int x, y, loc, dest;
 	while(file >> x >> y >> loc >> dest) addDoor(Door(sf::Vector2f(x,y), loc, dest));
 	file.close();
@@ -78,7 +78,7 @@ void Manager::doLogic(bool pressed[NUMBER_OF_BUTTONS])
 {
 	if(state == GAME)
 	{
-		if(pressed[PAUSE] == true)
+		if(pressed[PAUSE])
 		{
 			state = MENU;
 			for(int i = 0; i < (int)character_list.size(); i++)
@@ -88,20 +88,15 @@ void Manager::doLogic(bool pressed[NUMBER_OF_BUTTONS])
 			return;
 		}
 
-		//"AI"
 		int random_dir = rand()%4;
 		moveCharacter(1, (Direction)random_dir);
-		//
 
-		//move characters according to buttons pressed
 		if(pressed[LEFT]) moveCharacter(current_character_id, LEFT);
 		else if(pressed[RIGHT]) moveCharacter(current_character_id, RIGHT);
 		else if(pressed[UP]) moveCharacter(current_character_id, UP);
 		else if(pressed[DOWN]) moveCharacter(current_character_id, DOWN);
 		else if(pressed[ACTION]) interact();
-		//
 		
-		//getting tile in character's attention
 		attention_tile.x = character_list[current_character_id].getX();
 		attention_tile.y = character_list[current_character_id].getY();
 		switch(character_list[current_character_id].getWalkingDirection())
@@ -111,28 +106,26 @@ void Manager::doLogic(bool pressed[NUMBER_OF_BUTTONS])
 			case UP: attention_tile.y--; break;
 			case DOWN: attention_tile.y++; break;
 		}
-		//
 
 		for(int i = 0; i < (int)character_list.size(); i++)
 		{
-			character_list[i].onLoop();
-
-			//WALKING THROUGH DOOR LOGIC
+			Character* cchar = &character_list[i];
+			cchar->onLoop();
 			for(int j = 0; j < (int)door_list.size(); j++)
 			{
-				if(character_list[i].canTP() == false) continue;
-				if(character_list[i].getLevelID() == door_list[j].getLevelID() && character_list[i].getX() == door_list[j].getX() && character_list[i].getY() == door_list[j].getY() && character_list[i].getNewX() == door_list[j].getX() && character_list[i].getNewY() == door_list[j].getY())
+				if(cchar->canTP() == false) continue;
+
+				Door* cdoor = &door_list[j];
+				if(cchar->getLevelID() == cdoor->getLevelID() && cchar->getX() == cdoor->getX() && cchar->getY() == cdoor->getY() && cchar->getNewX() == cdoor->getX() && cchar->getNewY() == cdoor->getY())
 				{
-					int dest_id = door_list[j].getDestinationID();
-					sf::Vector2f dest(door_list[dest_id].getX(), door_list[dest_id].getY());
-					int dest_level = door_list[dest_id].getLevelID();
-					character_list[i].teleport(dest, dest_level);
-					if(current_character_id == i) current_level_id = character_list[i].getLevelID();
-					character_list[i].disableTP();
-					continue;
+					int dest_id = cdoor->getDestinationID();
+					Door* ddoor = &door_list[dest_id];
+					sf::Vector2f dest(ddoor->getX(), ddoor->getY());
+					int dest_level = ddoor->getLevelID();
+					cchar->teleport(dest, dest_level);
+					if(current_character_id == i) current_level_id = cchar->getLevelID();
 				}
 			}
-			//
 		}
 	}
 	else if(state == MENU)
@@ -144,8 +137,11 @@ void Manager::doLogic(bool pressed[NUMBER_OF_BUTTONS])
 			{
 				character_list[i].resumeTimers();
 			}
-			return;
 		}
+
+		if(pressed[DOWN]) main_menu.goDown();
+		if(pressed[UP]) main_menu.goUp();
+		
 	}
 }
 
@@ -153,7 +149,6 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 {
 	if(state == GAME)
 	{
-		//DRAW STATIC IMAGERY
 		for(int i = 0; i < level_list[current_level_id].getH(); i++) for(int j = 0; j < level_list[current_level_id].getW(); j++)
 		{
 			char tile = level_list[current_level_id].getTile(sf::Vector2f(j, i));
@@ -170,9 +165,7 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 				window->draw(tree_sprite);
 			}
 		}
-		//
 
-		//DRAW DOORS
 		for(int i = 0; i < (int)door_list.size(); i++)
 		{
 			if(door_list[i].getLevelID() == current_level_id)
@@ -182,9 +175,7 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 				window->draw(door_sprite);
 			}
 		}
-		//
 
-		//DRAW CHARACTERS
 		for(int i = 0; i < (int)character_list.size(); i++)
 		{
 			if(character_list[i].getLevelID() == current_level_id)
@@ -196,27 +187,33 @@ void Manager::draw(sf::RenderWindow* window, vector<sf::Sprite> sprites)
 				window->draw(character_sprite);
 			}
 		}
-		//
+	}
 
-		//DRAW INTERFACE
-		sf::RectangleShape interface(sf::Vector2f(GAME_WIDTH, 100));
-		interface.setPosition(sf::Vector2f(0, GAME_HEIGHT));
-		interface.setFillColor(sf::Color(20, 20, 20));
-		window->draw(interface);
-		if(msg_cd.getTime() < sf::seconds(5))
+	else if(state == MENU)
+	{
+		for(int i = 0; i < main_menu.getSize(); i++)
 		{
 			sf::Text text;
 			text.setFont(font);
-			text.setString(message);
+			text.setString((main_menu.getCurrentElement() == i) ? ("* " + main_menu.getElement(i)) : ("  " + main_menu.getElement(i)));
 			text.setCharacterSize(16);
 			text.setColor(sf::Color(20, 100, 255));
-			text.setPosition(sf::Vector2f(15, GAME_HEIGHT+15));
+			text.setPosition(sf::Vector2f(120, 120 + 30 * i));
 			window->draw(text);
 		}
 	}
 
-	//
-
+	sf::RectangleShape interface(sf::Vector2f(GAME_WIDTH, 100));
+	interface.setPosition(sf::Vector2f(0, GAME_HEIGHT));
+	interface.setFillColor(sf::Color(20, 20, 20));
+	window->draw(interface);
+	sf::Text text;
+	text.setFont(font);
+	text.setString(message);
+	text.setCharacterSize(16);
+	text.setColor(sf::Color(20, 100, 255));
+	text.setPosition(sf::Vector2f(15, GAME_HEIGHT + 15));
+	window->draw(text);
 }
 
 void Manager::moveCharacter(int character_id, Direction dir)
@@ -250,7 +247,6 @@ void Manager::interact()
 		if(i == current_character_id) continue;
 		if(character_list[i].getX() == attention_tile.x && character_list[i].getY() == attention_tile.y)
 		{
-			msg_cd.restart();
 			message = character_list[i].getName() + ": " + character_list[i].getMessage();
 
 			Character* npc = &character_list[i];

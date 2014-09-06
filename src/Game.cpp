@@ -30,34 +30,34 @@ void Game::init()
 
 	font.loadFromFile("data/fixedsys.ttf");
 
-	//LOADING TXT FILES
 	mng.addLevel(Level("data/level0.txt"));
 	mng.addLevel(Level("data/level1.txt"));
 	mng.loadCharacters("data/characters.txt");
 	mng.loadSettings("data/settings.txt");
 	mng.loadDoors("data/doors.txt");
 	mng.setFont(font);
-	//
 
-	//SETTING THE WINDOW UP
+	main_menu.addElement("New game");
+	main_menu.addElement("Options");
+	main_menu.addElement("Exit");
+	mng.setMainMenu(main_menu);
+
 	window.create(sf::VideoMode(GAME_WIDTH, GAME_HEIGHT + 100), "A role playing game...");
 
 	window.setKeyRepeatEnabled(false);
 	window.setVerticalSyncEnabled(true);
-	//
 
-	//LOADING SPRITES
 	texture.loadFromFile("data/sheet.png");
 
 	const int number_of_sprites = 24;
 
 	int sprite_rects[number_of_sprites] =
 	{
-		5, //number of sprites in row 1 of the spritesheet
-	   	5, //number of sprites in row 2 of the spritesheet
-	   	5, //number of sprites in row 3 of the spritesheet
-	   	5, //number of sprites in row 4 of the spritesheet
-	   	4  //number of sprites in row 5 of the spritesheet
+		5,
+	   	5,
+	   	5,
+	   	5,
+	   	4
 	};
 
 	for(int i = 0; i < number_of_sprites; i++)
@@ -70,7 +70,6 @@ void Game::init()
 			sprites.push_back(sprite);
 		}
 	}
-	//
 }
 
 void Game::handleEvents()

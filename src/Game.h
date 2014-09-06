@@ -21,6 +21,7 @@ private:
 	sf::Font font;
 	vector<sf::Sprite> sprites;
 	Manager mng;
+	Menu main_menu;
 	bool pressed[NUMBER_OF_BUTTONS];
 public:
 	Game();

@@ -2,7 +2,7 @@
 
 Timer::Timer()
 {
-	paused = false;
+	paused = true;
 	restart();
 }
 

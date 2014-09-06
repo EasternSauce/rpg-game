@@ -8,11 +8,9 @@ Character::Character(sf::Vector2f pos, int level_id, std::string name)
 	new_pos = sf::Vector2f(0, 0);
 	shift = sf::Vector2f(0, 0);
 	walking = false;
-	walk_timer.restart();
 	walk_dir = DOWN;
 	block_tp = false;
 	anim_step = 0;
-	anim_timer.restart();
 	message = "Hi there!";
 }
 
@@ -81,11 +79,6 @@ bool Character::canTP()
 	return !block_tp;
 }
 
-void Character::disableTP()
-{
-	block_tp = true;
-}
-
 void Character::onLoop()
 {
 	if(walking)
@@ -112,7 +105,10 @@ void Character::onLoop()
 			pos = new_pos;
 			shift = sf::Vector2f(0, 0);
 			anim_step = 0;
+			anim_timer.pause();
 			anim_timer.restart();
+			walk_timer.pause();
+			walk_timer.restart();
 		}
 	}
 }
@@ -120,10 +116,10 @@ void Character::onLoop()
 void Character::move(sf::Vector2f new_pos)
 {
 	walking = true;
+	anim_timer.resume();
+	walk_timer.resume();
 	this->new_pos = new_pos;
 	block_tp = false;
-
-	walk_timer.restart();
 }
 
 void Character::teleport(sf::Vector2f pos, int level_id)
@@ -131,6 +127,7 @@ void Character::teleport(sf::Vector2f pos, int level_id)
 	this->pos = pos;
 	this->new_pos = pos;
 	this->level_id = level_id;
+	block_tp = true;
 }
 
 void Character::pauseTimers()
