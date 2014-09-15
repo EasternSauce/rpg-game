@@ -19,12 +19,13 @@ private:
 	int anim_step;
 	std::string message;
 	std::string name;
-public:
 	Timer walk_timer;
+	sf::Clock walk_timer_;
 	Timer anim_timer;
 	sf::Vector2f shift;
-	Character(sf::Vector2f pos, int level_id, std::string name);
 
+public:
+	Character(sf::Vector2f pos, int level_id, std::string name);
 	int getNewX();
 	int getNewY();
 	int getShiftX();

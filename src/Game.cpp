@@ -19,7 +19,7 @@ void Game::init()
 
 	music.openFromFile("data/music.wav");
 	music.setLoop(true);
-	music.play();
+	//music.play();
 
 	font.loadFromFile("data/fixedsys.ttf");
 
