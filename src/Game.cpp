@@ -161,8 +161,8 @@ void Game::doLogic()
 			}
 			return;
 		}
-		int random_dir = rand()%4;
-		moveCharacter(1, (Direction)random_dir);
+		//int random_dir = rand()%4;
+		//moveCharacter(1, (Direction)random_dir);
 
 		attention_tile.x = character_list[current_character_id].getX();
 		attention_tile.y = character_list[current_character_id].getY();
@@ -281,24 +281,25 @@ void Game::draw()
 
 void Game::moveCharacter(int character_id, Direction dir)
 {
-	if(character_list[character_id].isWalking()) return;
-	character_list[character_id].setWalkingDirection(dir);
-	sf::Vector2f new_pos(character_list[character_id].getX(), character_list[character_id].getY());
+	Character* cchar = &character_list[character_id];
+	if(cchar->isWalking()) return;
+	cchar->setWalkingDirection(dir);
+	sf::Vector2f new_pos(cchar->getX(), cchar->getY());
 	if(dir == LEFT) new_pos.x--;
 	else if(dir == RIGHT) new_pos.x++;
 	else if(dir == UP) new_pos.y--;
 	else if(dir == DOWN) new_pos.y++;
-	Level* lvl = &level_list[character_list[character_id].getLevelID()];
+	Level* lvl = &level_list[cchar->getLevelID()];
 	if(lvl->getTile(new_pos) != 'o') return;
 	if(new_pos.x < 0 || new_pos.x >= lvl->getW()) return;
 	if(new_pos.y < 0 || new_pos.y >= lvl->getH()) return;
 	for(int i = 0; i < (int)character_list.size(); i++)
 	{
 		if(i == character_id) continue;
-		if(character_list[character_id].getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getX() && new_pos.y == character_list[i].getY()) return;
-		if(character_list[character_id].getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getNewX() && new_pos.y == character_list[i].getNewY()) return;
+		if(cchar->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getX() && new_pos.y == character_list[i].getY()) return;
+		//if(cchar->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getNewX() && new_pos.y == character_list[i].getNewY()) return;
 	}
-	character_list[character_id].move(sf::Vector2f(new_pos.x, new_pos.y));
+	cchar->move(sf::Vector2f(new_pos.x, new_pos.y));
 }
 
 void Game::interact()

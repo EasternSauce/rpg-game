@@ -5,7 +5,7 @@ Character::Character(sf::Vector2f pos, int level_id, std::string name)
 	this->pos = pos;
 	this->level_id = level_id;
 	this->name = name;
-	new_pos = sf::Vector2f(0, 0);
+	new_pos = sf::Vector2f(-1, -1); //bugfixes the annoying thing
 	shift = sf::Vector2f(0, 0);
 	walking = false;
 	walk_dir = DOWN;
@@ -84,7 +84,7 @@ void Character::onLoop()
 	if(walking)
 	{
 		sf::Time time = walk_timer_.getElapsedTime();
-		float multiplier = (float)time.asMilliseconds() / WALK_TIME;
+		float multiplier = (float)time.asMilliseconds() / (float)WALK_TIME;
 		if(anim_timer.getTime() >= sf::milliseconds(60))
 		{
 			anim_step = anim_step % 4 + 1;
