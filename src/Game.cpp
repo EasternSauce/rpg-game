@@ -55,7 +55,7 @@ void Game::init()
 	window.create(sf::VideoMode(GAME_WIDTH, GAME_HEIGHT + 100), "A role playing game...");
 
 	window.setKeyRepeatEnabled(false);
-	window.setVerticalSyncEnabled(true);
+	//window.setVerticalSyncEnabled(true);
 
 	texture.loadFromFile("data/sheet.png");
 
@@ -215,19 +215,20 @@ void Game::draw()
 	window.clear();
 	if(state == GAME)
 	{
+		sf::Vector2f cam(camera.getOffsetX(), camera.getOffsetY());
 		for(int i = 0; i < level_list[current_level_id].getH(); i++) for(int j = 0; j < level_list[current_level_id].getW(); j++)
 		{
 			char tile = level_list[current_level_id].getTile(sf::Vector2f(j, i));
 			if(tile == 'o')
 			{
 				sf::Sprite grass_sprite = sprites[GRASS];
-				grass_sprite.setPosition(sf::Vector2f(j * TILE_SIZE - camera.getOffsetX(), i * TILE_SIZE - camera.getOffsetY()));
+				grass_sprite.setPosition(sf::Vector2f(j * TILE_SIZE - cam.x, i * TILE_SIZE - cam.y));
 				window.draw(grass_sprite);
 			}
 			if(tile == 't')
 			{
 				sf::Sprite tree_sprite = sprites[TREE];
-				tree_sprite.setPosition(sf::Vector2f(j * TILE_SIZE - camera.getOffsetX(), i * TILE_SIZE - camera.getOffsetY()));
+				tree_sprite.setPosition(sf::Vector2f(j * TILE_SIZE - cam.x, i * TILE_SIZE - cam.y));
 				window.draw(tree_sprite);
 			}
 		}
@@ -236,7 +237,7 @@ void Game::draw()
 			if(door_list[i].getLevelID() == current_level_id)
 			{
 				sf::Sprite door_sprite = sprites[DOOR];
-				door_sprite.setPosition(sf::Vector2f(door_list[i].getX() * TILE_SIZE - camera.getOffsetX(), door_list[i].getY() * TILE_SIZE - camera.getOffsetY()));
+				door_sprite.setPosition(sf::Vector2f(door_list[i].getX() * TILE_SIZE - cam.x, door_list[i].getY() * TILE_SIZE - cam.y));
 				window.draw(door_sprite);
 			}
 		}
@@ -247,7 +248,7 @@ void Game::draw()
 				Character c_char = character_list[i];
 				sf::Sprite character_sprite = sprites[CHARACTER+c_char.getWalkingDirection() * 5 + c_char.getAnimStep()];
 				sf::Vector2f real_pos = sf::Vector2f(c_char.getX() * TILE_SIZE + c_char.getShiftX(), c_char.getY() * TILE_SIZE + c_char.getShiftY());
-				character_sprite.setPosition(sf::Vector2f(real_pos.x - camera.getOffsetX(), real_pos.y - camera.getOffsetY()));
+				character_sprite.setPosition(sf::Vector2f(real_pos.x - cam.x, real_pos.y - cam.y));
 				window.draw(character_sprite);
 			}
 		}
