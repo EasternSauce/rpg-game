@@ -2,10 +2,11 @@
 
 Game::Game()
 {
-	state = GAME;
+	state = MENU;
 	current_character_id = 0;
 	current_level_id = 0;
 	attention_tile = sf::Vector2f(0, 0);
+	opponent = NULL;
 }
 
 bool Game::isWindowOpen()
@@ -19,7 +20,6 @@ void Game::init()
 
 	music.openFromFile("data/music.wav");
 	music.setLoop(true);
-	//music.play();
 
 	font.loadFromFile("data/fixedsys.ttf");
 
@@ -80,6 +80,16 @@ void Game::init()
 			sprites.push_back(sprite);
 		}
 	}
+
+	summon_type_list.push_back(SummonType("Zomobon", 100));
+	summon_type_list.push_back(SummonType("Kerodia", 120));
+	summon_type_list.push_back(SummonType("Anegont", 114));
+	summon_type_list.push_back(SummonType("Sanegoar", 130));
+	summon_type_list.push_back(SummonType("Elestrio", 125));
+
+	character_list[0].addSummon(Summon(summon_type_list[3], 5));
+	character_list[0].addSummon(Summon(summon_type_list[2], 6));
+	character_list[1].addSummon(Summon(summon_type_list[4], 8));
 }
 
 
@@ -92,77 +102,76 @@ void Game::doLogic()
 		if(event.type == sf::Event::Closed) window.close();
 		if(event.type == sf::Event::KeyPressed)
 		{
-			if(event.key.code == sf::Keyboard::Escape) window.close();
-			if(event.key.code == sf::Keyboard::Left)
+			if(state == GAME)
 			{
+				if(event.key.code == sf::Keyboard::Escape)
+				{
+					pause();
+				}
+				else if(event.key.code == sf::Keyboard::Z)
+				{
+					interact();
+				}
 			}
-			if(event.key.code == sf::Keyboard::Right)
+			else if(state == MENU)
 			{
-			}
-			if(event.key.code == sf::Keyboard::Up)
-			{
-			}
-			if(event.key.code == sf::Keyboard::Down)
-			{
-			}
-			if(event.key.code == sf::Keyboard::Z)
-			{
-				interact();
-			}
-			if(event.key.code == sf::Keyboard::P)
-			{
-			}
-		}
-		if(event.type == sf::Event::KeyReleased)
-		{
-			if(event.key.code == sf::Keyboard::Left)
-			{
-			}
-			if(event.key.code == sf::Keyboard::Right)
-			{
-			}
-			if(event.key.code == sf::Keyboard::Up)
-			{
-			}
-			if(event.key.code == sf::Keyboard::Down)
-			{
-			}
-			if(event.key.code == sf::Keyboard::Z)
-			{
-			}
-		}
-	}
+				if(event.key.code == sf::Keyboard::Escape)
+				{
+					resume();
+				}
+				else if(event.key.code == sf::Keyboard::Up)
+				{
+					main_menu.goUp();
+				}
+				else if(event.key.code == sf::Keyboard::Down)
+				{
+					main_menu.goDown();
+				}
+				else if(event.key.code == sf::Keyboard::Return)
+				{
+					switch(main_menu.getCurrentElementID())
+					{
+						case 0:
+							state = GAME;
+							restart();
+							break;
+						case 1:
+							//options menu
+							break;
+						case 2:
+							window.close();
+							break;
+					}
+				}
+			}	
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		moveCharacter(current_character_id, LEFT);
-	}
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-		moveCharacter(current_character_id, RIGHT);
-	}
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-	{
-		moveCharacter(current_character_id, UP);
-	}
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-	{
-		moveCharacter(current_character_id, DOWN);
+		}
 	}
 
 	if(state == GAME)
 	{
-		if(0)
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
-			state = MENU;
-			for(int i = 0; i < (int)character_list.size(); i++)
-			{
-				character_list[i].pauseTimers();
-			}
-			return;
+			moveCharacter(current_character_id, LEFT);
 		}
-		//int random_dir = rand()%4;
-		//moveCharacter(1, (Direction)random_dir);
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			moveCharacter(current_character_id, RIGHT);
+		}
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		{
+			moveCharacter(current_character_id, UP);
+		}
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		{
+			moveCharacter(current_character_id, DOWN);
+		}
+	}
+
+	if(state == GAME)
+	{
+		int random_dir = rand()%4;
+		moveCharacter(1, (Direction)random_dir);
 
 		attention_tile.x = character_list[current_character_id].getX();
 		attention_tile.y = character_list[current_character_id].getY();
@@ -195,20 +204,14 @@ void Game::doLogic()
 	}
 	else if(state == MENU)
 	{
-		if(0)
-		{
-			state = GAME;
-			for(int i = 0; i < (int)character_list.size(); i++)
-			{
-				character_list[i].resumeTimers();
-			}
-		}
-		//if(pressed[DOWN]) main_menu.goDown();
-		//if(pressed[UP]) main_menu.goUp();
+
+	}
+	else if(state == BATTLE)
+	{
+
+
 	}
 }
-
-void Game::exit(){}
 
 void Game::draw()
 {
@@ -266,6 +269,60 @@ void Game::draw()
 			window.draw(text);
 		}
 	}
+	else if(state == BATTLE)
+	{
+		sf::Color summon_name_color(20, 100, 255), hp_color(51, 132, 33), hp_num_color(40, 40, 140), lvl_color(200, 23, 200);
+		int font_size = 16, hp_font_size = 12;
+
+		sf::Text summon1(character_list[current_character_id].getSummon(0)->getName(), font, font_size);
+		summon1.setPosition(sf::Vector2f(100, GAME_HEIGHT - 100));
+		summon1.setColor(summon_name_color);
+		window.draw(summon1);
+
+		sf::Text summon2(opponent->getSummon(0)->getName(), font, font_size);
+		summon2.setColor(summon_name_color);
+		summon2.setPosition(sf::Vector2f(GAME_WIDTH - 220, 100));
+		window.draw(summon2);
+
+		sf::RectangleShape hpbar1(sf::Vector2f(100, 7));
+		hpbar1.setPosition(sf::Vector2f(100, GAME_HEIGHT - 100 + 30));
+		hpbar1.setFillColor(hp_color);
+		window.draw(hpbar1);
+
+		sf::RectangleShape hpbar2(sf::Vector2f(100, 7));
+		hpbar2.setPosition(sf::Vector2f(GAME_WIDTH - 220, 100 + 30));
+		hpbar2.setFillColor(hp_color);
+		window.draw(hpbar2);
+
+		stringstream ss1, ss2;
+
+		ss1 << character_list[current_character_id].getSummon(0)->getHP() << "/" << character_list[current_character_id].getSummon(0)->getMaxHP();
+		sf::Text hp_num1(ss1.str(), font, hp_font_size);
+		hp_num1.setColor(hp_num_color);
+		hp_num1.setPosition(sf::Vector2f(100 + 100 + 20, GAME_HEIGHT - 100 + 25));
+		window.draw(hp_num1);
+
+		ss2 << opponent->getSummon(0)->getHP() << "/" << opponent->getSummon(0)->getMaxHP();
+		sf::Text hp_num2(ss2.str(), font, hp_font_size);
+		hp_num2.setColor(hp_num_color);
+		hp_num2.setPosition(sf::Vector2f(GAME_WIDTH - 220 + 100 + 20, 100 + 25));
+		window.draw(hp_num2);
+
+		stringstream ss3, ss4;
+
+		ss3 << "Lvl " << character_list[current_character_id].getSummon(0)->getLevel();
+		sf::Text sum_lvl1(ss3.str(), font, font_size);
+		sum_lvl1.setColor(lvl_color);
+		sum_lvl1.setPosition(sf::Vector2f(100 + 100, GAME_HEIGHT - 100));
+		window.draw(sum_lvl1);
+
+		ss4 << "Lvl " << opponent->getSummon(0)->getLevel();
+		sf::Text sum_lvl2(ss4.str(), font, font_size);
+		sum_lvl2.setColor(lvl_color);
+		sum_lvl2.setPosition(sf::Vector2f(GAME_WIDTH - 220 + 100, 100));
+		window.draw(sum_lvl2);
+
+	}
 	sf::RectangleShape interface(sf::Vector2f(GAME_WIDTH, 100));
 	interface.setPosition(sf::Vector2f(0, GAME_HEIGHT));
 	interface.setFillColor(sf::Color(20, 20, 20));
@@ -278,6 +335,40 @@ void Game::draw()
 	text.setPosition(sf::Vector2f(15, GAME_HEIGHT + 15));
 	window.draw(text);
 	window.display();
+}
+
+void Game::exit(){}
+
+void Game::restart()
+{
+	music.stop();
+	music.play();
+
+	ifstream file;
+	int x, y, loc, dest;
+	std::string name;
+	int temp;
+
+	character_list.clear();
+	file.open("data/characters.txt");
+	while(file >> x >> y >> loc >> name) character_list.push_back(Character(sf::Vector2f(x, y), loc, name));
+	file.close();
+	Character* cchar = &character_list[current_character_id];
+	camera.setHandles(cchar->getPosHandle(), cchar->getShiftHandle());
+
+	file.open("data/settings.txt");
+	file >> temp;
+	current_level_id = temp;
+	file >> temp;
+	current_character_id = temp;
+	file.close();
+
+	character_list[0].addSummon(Summon(summon_type_list[3], 5));
+	character_list[0].addSummon(Summon(summon_type_list[2], 6));
+	character_list[1].addSummon(Summon(summon_type_list[4], 8));
+	
+	message = "";
+	opponent = NULL;
 }
 
 void Game::moveCharacter(int character_id, Direction dir)
@@ -298,7 +389,7 @@ void Game::moveCharacter(int character_id, Direction dir)
 	{
 		if(i == character_id) continue;
 		if(cchar->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getX() && new_pos.y == character_list[i].getY()) return;
-		//if(cchar->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getNewX() && new_pos.y == character_list[i].getNewY()) return;
+		if(cchar->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getNewX() && new_pos.y == character_list[i].getNewY()) return;
 	}
 	cchar->move(sf::Vector2f(new_pos.x, new_pos.y));
 }
@@ -310,8 +401,11 @@ void Game::interact()
 		if(i == current_character_id) continue;
 		if(character_list[i].getX() == attention_tile.x && character_list[i].getY() == attention_tile.y)
 		{
+			/*
 			message = character_list[i].getName() + ": " + character_list[i].getMessage();
+			*/
 			Character* npc = &character_list[i];
+			
 			if(npc->isWalking() == false)
 			{
 				switch(character_list[current_character_id].getWalkingDirection())
@@ -322,6 +416,32 @@ void Game::interact()
 					case UP: npc->setWalkingDirection(DOWN); break;
 				}	
 			}
+
+			engageInBattle(npc);
 		}
+	}
+}
+
+void Game::engageInBattle(Character* npc)
+{
+	state = BATTLE;
+	opponent = npc;
+}
+
+void Game::pause()
+{
+	state = MENU;
+	for(int i = 0; i < (int)character_list.size(); i++)
+	{
+		character_list[i].pauseTimers();
+	}
+}
+
+void Game::resume()
+{
+	state = GAME;
+	for(int i = 0; i < (int)character_list.size(); i++)
+	{
+		character_list[i].resumeTimers();
 	}
 }

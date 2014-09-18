@@ -6,6 +6,7 @@
 #include <ctime>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -17,6 +18,7 @@
 #include "Door.h"
 #include "Timer.h"
 #include "Menu.h"
+#include "SummonType.h"
 
 class Game
 {
@@ -31,11 +33,13 @@ private:
 	vector<Level> level_list;
 	vector<Character> character_list;
 	vector<Door> door_list;
+	vector<SummonType> summon_type_list;
 	int current_level_id;
 	int current_character_id;
 	Camera camera;
 	sf::Vector2f attention_tile;
 	std::string message;
+	Character* opponent;
 public:
 	Game();
 
@@ -46,8 +50,12 @@ public:
 	void draw();
 	void exit();
 
+	void restart();
 	void moveCharacter(int character_id, Direction dir);
 	void interact();
+	void engageInBattle(Character* npc);
+	void pause();
+	void resume();
 };
 
 #endif

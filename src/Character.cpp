@@ -83,7 +83,7 @@ void Character::onLoop()
 {
 	if(walking)
 	{
-		sf::Time time = walk_timer_.getElapsedTime();
+		sf::Time time = walk_timer.getTime();
 		float multiplier = (float)time.asMilliseconds() / (float)WALK_TIME;
 		if(anim_timer.getTime() >= sf::milliseconds(60))
 		{
@@ -107,8 +107,8 @@ void Character::onLoop()
 			anim_step = 0;
 			anim_timer.pause();
 			anim_timer.restart();
-			//walk_timer.pause();
-			//walk_timer.restart();
+			walk_timer.pause();
+			walk_timer.restart();
 		}
 	}
 }
@@ -117,8 +117,7 @@ void Character::move(sf::Vector2f new_pos)
 {
 	walking = true;
 	anim_timer.resume();
-	//walk_timer.resume();
-	walk_timer_.restart();
+	walk_timer.resume();
 	this->new_pos = new_pos;
 	block_tp = false;
 }
@@ -134,11 +133,21 @@ void Character::teleport(sf::Vector2f pos, int level_id)
 void Character::pauseTimers()
 {
 	anim_timer.pause();
-	//walk_timer.pause();
+	walk_timer.pause();
 }
 
 void Character::resumeTimers()
 {
 	anim_timer.resume();
-	//walk_timer.resume();
+	walk_timer.resume();
+}
+
+void Character::addSummon(Summon summon)
+{
+	summons.push_back(summon);
+}
+
+Summon* Character::getSummon(int id)
+{
+	return &summons[id];
 }

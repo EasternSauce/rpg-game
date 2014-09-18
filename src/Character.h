@@ -2,12 +2,14 @@
 #define CHARACTER_H
 
 #include <string>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
 #include "Entity.h"
 #include "Timer.h"
 #include "consts.h"
+#include "Summon.h"
 
 class Character : public Entity
 {
@@ -20,10 +22,9 @@ private:
 	std::string message;
 	std::string name;
 	Timer walk_timer;
-	sf::Clock walk_timer_;
 	Timer anim_timer;
 	sf::Vector2f shift;
-
+	std::vector<Summon> summons;
 public:
 	Character(sf::Vector2f pos, int level_id, std::string name);
 	int getNewX();
@@ -45,6 +46,8 @@ public:
 	void teleport(sf::Vector2f pos, int level_id);
 	void pauseTimers();
 	void resumeTimers();
+	void addSummon(Summon summon);
+	Summon* getSummon(int id);
 };
 
 #endif
