@@ -12,6 +12,7 @@ Character::Character(sf::Vector2f pos, int level_id, std::string name)
 	block_tp = false;
 	anim_step = 0;
 	message = "Hi there!";
+	current_summon = 0;
 }
 
 int Character::getNewX()
@@ -145,6 +146,11 @@ void Character::resumeTimers()
 void Character::addSummon(Summon summon)
 {
 	summons.push_back(summon);
+}
+
+Summon* Character::getSummon()
+{
+	return &summons[current_summon];
 }
 
 Summon* Character::getSummon(int id)

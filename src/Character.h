@@ -25,6 +25,7 @@ private:
 	Timer anim_timer;
 	sf::Vector2f shift;
 	std::vector<Summon> summons;
+	int current_summon;
 public:
 	Character(sf::Vector2f pos, int level_id, std::string name);
 	int getNewX();
@@ -47,6 +48,7 @@ public:
 	void pauseTimers();
 	void resumeTimers();
 	void addSummon(Summon summon);
+	Summon* getSummon();
 	Summon* getSummon(int id);
 };
 

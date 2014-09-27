@@ -29,13 +29,16 @@ private:
 	sf::Music music;
 	sf::Font font;
 	Menu main_menu;
+	Menu battle_menu;
 	State state;
 	vector<Level> level_list;
 	vector<Character> character_list;
 	vector<Door> door_list;
 	vector<SummonType> summon_type_list;
-	int current_level_id;
-	int current_character_id;
+
+	Level* current_level;
+	Character* player;
+
 	Camera camera;
 	sf::Vector2f attention_tile;
 	std::string message;
@@ -51,7 +54,7 @@ public:
 	void exit();
 
 	void restart();
-	void moveCharacter(int character_id, Direction dir);
+	void moveCharacter(Character* character, Direction dir);
 	void interact();
 	void engageInBattle(Character* npc);
 	void pause();
