@@ -54,9 +54,9 @@ void Game::init()
 	main_menu.addElement("Options");
 	main_menu.addElement("Exit");
 
-	//battle_menu.addElement("Attack");
-	//battle_menu.addElement("Inventory");
-	//battle_menu.addElement("Run");
+	battle_menu.addElement("Attack");
+	battle_menu.addElement("Inventory");
+	battle_menu.addElement("Run");
 
 	window.create(sf::VideoMode(GAME_WIDTH, GAME_HEIGHT + 100), "A role playing game...");
 
@@ -154,19 +154,18 @@ void Game::doLogic()
 			{
 				if(event.key.code == sf::Keyboard::Escape)
 				{
-					//resume();
+					resume();
 				}
 				else if(event.key.code == sf::Keyboard::Up)
 				{
-					//battle_menu.goUp();
+					battle_menu.goUp();
 				}
 				else if(event.key.code == sf::Keyboard::Down)
 				{
-					//battle_menu.goDown();
+					battle_menu.goDown();
 				}
 				else if(event.key.code == sf::Keyboard::Return)
 				{
-					/*
 					switch(battle_menu.getCurrentElementID())
 					{
 						case 0:
@@ -180,7 +179,6 @@ void Game::doLogic()
 							window.close();
 							break;
 					}
-					*/
 				}
 
 
@@ -387,11 +385,9 @@ void Game::draw()
 		text.setColor(sf::Color(20, 100, 255));
 		text.setPosition(sf::Vector2f(15, GAME_HEIGHT + 15));
 		window.draw(text);
-		window.display();
 	}
 	else if(state == BATTLE)
 	{
-		/*
 		for(int i = 0; i < battle_menu.getSize(); i++)
 		{
 			sf::Text text;
@@ -402,8 +398,9 @@ void Game::draw()
 			text.setPosition(sf::Vector2f(30, GAME_HEIGHT + 25 * i));
 			window.draw(text);
 		}
-		*/
 	}
+
+	window.display();
 }
 
 void Game::exit(){}
@@ -468,9 +465,7 @@ void Game::interact()
 		if(player == &character_list[i]) continue;
 		if(character_list[i].getX() == attention_tile.x && character_list[i].getY() == attention_tile.y)
 		{
-			/*
 			message = character_list[i].getName() + ": " + character_list[i].getMessage();
-			*/
 			Character* npc = &character_list[i];
 			
 			if(npc->isWalking() == false)
