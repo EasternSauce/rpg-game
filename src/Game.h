@@ -25,18 +25,18 @@ class Game
 private:
 	sf::RenderWindow window;
 	sf::Texture texture;
-	vector<sf::Sprite> sprites;
+	std::vector<sf::Sprite> sprites;
 	sf::Music music;
 	sf::Font font;
 	Menu main_menu;
 	Menu battle_menu;
 	State state;
-	vector<Level> level_list;
-	vector<Character> character_list;
-	vector<Door> door_list;
-	vector<SummonType> summon_type_list;
+	BattleState battle_state;
+	std::vector<Level> level_list;
+	std::vector<Character> character_list;
+	std::vector<Door> door_list;
+	std::vector<SummonType> summon_type_list;
 
-	Level* current_level;
 	Character* player;
 
 	Camera camera;

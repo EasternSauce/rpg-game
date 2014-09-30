@@ -1,10 +1,11 @@
 #include "Game.h"
+#include <iostream>
 
 Game::Game()
 {
 	state = MENU;
+	battle_state = NORMAL;
 	player = NULL;
-	current_level = NULL;
 	attention_tile = sf::Vector2f(0, 0);
 	opponent = NULL;
 }
@@ -26,7 +27,7 @@ void Game::init()
 	level_list.push_back(Level("data/level0.txt"));
 	level_list.push_back(Level("data/level1.txt"));
 
-	ifstream file;
+	std::ifstream file;
 	int x, y, loc, dest;
 	std::string name;
 	int temp;
@@ -35,13 +36,10 @@ void Game::init()
 	while(file >> x >> y >> loc >> name) character_list.push_back(Character(sf::Vector2f(x, y), loc, name));
 	file.close();
 
-	player = &character_list[0];
 
 	camera.setHandles(player->getPosHandle(), player->getShiftHandle());
 
 	file.open("data/settings.txt");
-	file >> temp;
-	current_level = &level_list[temp];
 	file >> temp;
 	player = &character_list[temp];
 	file.close();
@@ -101,6 +99,7 @@ void Game::init()
 
 void Game::doLogic()
 {
+
 	sf::Event event;
 
 	while(window.pollEvent(event))
@@ -169,18 +168,16 @@ void Game::doLogic()
 					switch(battle_menu.getCurrentElementID())
 					{
 						case 0:
-							state = GAME;
-							restart();
+							battle_state = ATTACK;
 							break;
 						case 1:
-							//options menu
+							battle_state = ITEMS;
 							break;
 						case 2:
-							window.close();
+							battle_state = RUN;
 							break;
 					}
 				}
-
 
 			}
 
@@ -223,20 +220,19 @@ void Game::doLogic()
 		}
 		for(int i = 0; i < (int)character_list.size(); i++)
 		{
-			Character* cchar = &character_list[i];
-			cchar->onLoop();
+			Character* c_char = &character_list[i];
+			c_char->onLoop();
 			for(int j = 0; j < (int)door_list.size(); j++)
 			{
-				if(cchar->canTP() == false) continue;
+				if(c_char->canTP() == false) continue;
 				Door* cdoor = &door_list[j];
-				if(cchar->getLevelID() == cdoor->getLevelID() && cchar->getX() == cdoor->getX() && cchar->getY() == cdoor->getY() && cchar->getNewX() == cdoor->getX() && cchar->getNewY() == cdoor->getY())
+				if(c_char->getLevelID() == cdoor->getLevelID() && c_char->getX() == cdoor->getX() && c_char->getY() == cdoor->getY() && c_char->getNewX() == cdoor->getX() && c_char->getNewY() == cdoor->getY())
 				{
 					int dest_id = cdoor->getDestinationID();
 					Door* ddoor = &door_list[dest_id];
 					sf::Vector2f dest(ddoor->getX(), ddoor->getY());
 					int dest_level = ddoor->getLevelID();
-					cchar->teleport(dest, dest_level);
-					if(player == &character_list[i]) current_level = &level_list[cchar->getLevelID()];
+					c_char->teleport(dest, dest_level);
 				}
 			}
 		}
@@ -256,6 +252,7 @@ void Game::draw()
 	window.clear();
 	if(state == GAME)
 	{
+		Level* current_level = &level_list[player->getLevelID()];
 		sf::Vector2f cam(camera.getOffsetX(), camera.getOffsetY());
 		for(int i = 0; i < current_level->getH(); i++) for(int j = 0; j < current_level->getW(); j++)
 		{
@@ -284,11 +281,11 @@ void Game::draw()
 		}
 		for(int i = 0; i < (int)character_list.size(); i++)
 		{
-			if(&level_list[player->getLevelID()] == current_level)
+			Character* c_char = &character_list[i];
+			if(&level_list[c_char->getLevelID()] == current_level)
 			{
-				Character c_char = character_list[i];
-				sf::Sprite character_sprite = sprites[CHARACTER+c_char.getWalkingDirection() * 5 + c_char.getAnimStep()];
-				sf::Vector2f real_pos = sf::Vector2f(c_char.getX() * TILE_SIZE + c_char.getShiftX(), c_char.getY() * TILE_SIZE + c_char.getShiftY());
+				sf::Sprite character_sprite = sprites[CHARACTER+c_char->getWalkingDirection() * 5 + c_char->getAnimStep()];
+				sf::Vector2f real_pos = sf::Vector2f(c_char->getX() * TILE_SIZE + c_char->getShiftX(), c_char->getY() * TILE_SIZE + c_char->getShiftY());
 				character_sprite.setPosition(sf::Vector2f(real_pos.x - cam.x, real_pos.y - cam.y));
 				window.draw(character_sprite);
 			}
@@ -332,17 +329,17 @@ void Game::draw()
 		hpbar1a.setFillColor(hp_color);
 		window.draw(hpbar1a);
 
-		sf::RectangleShape hpbar2(sf::Vector2f((float)opponent->getSummon()->getHP()/opponent->getSummon()->getMaxHP() * 100, 7));
+		sf::RectangleShape hpbar2(sf::Vector2f(100, 7));
 		hpbar2.setPosition(sf::Vector2f(GAME_WIDTH - 220, 100 + 30));
 		hpbar2.setFillColor(hp_color_red);
 		window.draw(hpbar2);
 
-		sf::RectangleShape hpbar2a(sf::Vector2f(100, 7));
+		sf::RectangleShape hpbar2a(sf::Vector2f((float)opponent->getSummon()->getHP()/opponent->getSummon()->getMaxHP() * 100, 7));
 		hpbar2a.setPosition(sf::Vector2f(GAME_WIDTH - 220, 100 + 30));
 		hpbar2a.setFillColor(hp_color);
 		window.draw(hpbar2a);
 
-		stringstream ss1, ss2;
+		std::stringstream ss1, ss2;
 
 		ss1 << player->getSummon()->getHP() << "/" << player->getSummon()->getMaxHP();
 		sf::Text hp_num1(ss1.str(), font, hp_font_size);
@@ -356,7 +353,7 @@ void Game::draw()
 		hp_num2.setPosition(sf::Vector2f(GAME_WIDTH - 220 + 100 + 20, 100 + 25));
 		window.draw(hp_num2);
 
-		stringstream ss3, ss4;
+		std::stringstream ss3, ss4;
 
 		ss3 << "Lvl " << player->getSummon()->getLevel();
 		sf::Text sum_lvl1(ss3.str(), font, font_size);
@@ -410,7 +407,7 @@ void Game::restart()
 	music.stop();
 	music.play();
 
-	ifstream file;
+	std::ifstream file;
 	int x, y, loc, dest;
 	std::string name;
 	int temp;
@@ -422,8 +419,6 @@ void Game::restart()
 	camera.setHandles(player->getPosHandle(), player->getShiftHandle());
 
 	file.open("data/settings.txt");
-	file >> temp;
-	current_level = &level_list[temp];
 	file >> temp;
 	player = &character_list[temp];
 	file.close();
@@ -451,7 +446,6 @@ void Game::moveCharacter(Character* character, Direction dir)
 	if(new_pos.y < 0 || new_pos.y >= lvl->getH()) return;
 	for(int i = 0; i < (int)character_list.size(); i++)
 	{
-		if(player == &character_list[i]) continue;
 		if(character->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getX() && new_pos.y == character_list[i].getY()) return;
 		if(character->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getNewX() && new_pos.y == character_list[i].getNewY()) return;
 	}
@@ -487,7 +481,10 @@ void Game::interact()
 void Game::engageInBattle(Character* npc)
 {
 	state = BATTLE;
+	battle_state = NORMAL;
 	opponent = npc;
+
+
 }
 
 void Game::pause()

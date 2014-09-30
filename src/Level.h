@@ -7,16 +7,14 @@
 
 #include <SFML/Graphics.hpp>
 
-using namespace std;
-
 class Level
 {
 private:
 	sf::Vector2f dim;
 	int id;
-	vector<char> static_layer;
+	std::vector<char> static_layer;
 public:
-	Level(string file_name);
+	Level(std::string file_name);
 
 	int getW();
 	int getH();

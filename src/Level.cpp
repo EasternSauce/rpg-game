@@ -1,8 +1,8 @@
 #include "Level.h"
 
-Level::Level(string file_name)
+Level::Level(std::string file_name)
 {
-	ifstream file(file_name.c_str());
+	std::ifstream file(file_name.c_str());
 	file >> dim.x;
 	file >> dim.y;
 	for(int i = 0; i < dim.x*dim.y; i++)

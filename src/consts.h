@@ -28,4 +28,12 @@ enum State
 	BATTLE
 };
 
+enum BattleState
+{
+	NORMAL,
+	ATTACK,
+	ITEMS,
+	RUN
+};
+
 #endif
