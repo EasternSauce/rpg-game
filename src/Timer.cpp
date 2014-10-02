@@ -35,3 +35,8 @@ void Timer::resume()
 		paused = false;
 	}
 }
+
+bool Timer::isRunning()
+{
+	return !paused;
+}

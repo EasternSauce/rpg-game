@@ -13,6 +13,8 @@ Character::Character(sf::Vector2f pos, int level_id, std::string name)
 	anim_step = 0;
 	message = "Hi there!";
 	current_summon = 0;
+	paused_anim_timer = false;
+	paused_walk_timer = false;
 }
 
 int Character::getNewX()
@@ -131,16 +133,32 @@ void Character::teleport(sf::Vector2f pos, int level_id)
 	block_tp = true;
 }
 
-void Character::pauseTimers()
+void Character::pause()
 {
-	anim_timer.pause();
-	walk_timer.pause();
+	if(anim_timer.isRunning())
+	{
+		anim_timer.pause();
+		paused_anim_timer = true;
+	}
+	if(walk_timer.isRunning())
+	{
+		walk_timer.pause();
+		paused_walk_timer = true;
+	}
 }
 
-void Character::resumeTimers()
+void Character::resume()
 {
-	anim_timer.resume();
-	walk_timer.resume();
+	if(paused_anim_timer)
+	{
+		anim_timer.resume();
+		paused_anim_timer = false;
+	}
+	if(paused_walk_timer)
+	{
+		walk_timer.resume();
+		paused_walk_timer = false;
+	}
 }
 
 void Character::addSummon(Summon summon)

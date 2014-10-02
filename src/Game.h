@@ -43,6 +43,7 @@ private:
 	sf::Vector2f attention_tile;
 	std::string message;
 	Character* opponent;
+	bool paused;
 public:
 	Game();
 

@@ -18,6 +18,7 @@ class Timer
 		void restart();
 		void pause();
 		void resume();
+		bool isRunning();
 };
 
 #endif

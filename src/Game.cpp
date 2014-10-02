@@ -8,6 +8,7 @@ Game::Game()
 	player = NULL;
 	attention_tile = sf::Vector2f(0, 0);
 	opponent = NULL;
+	paused = false;
 }
 
 bool Game::isWindowOpen()
@@ -94,11 +95,13 @@ void Game::init()
 	character_list[0].addSummon(Summon(summon_type_list[3], 5));
 	character_list[0].addSummon(Summon(summon_type_list[2], 6));
 	character_list[1].addSummon(Summon(summon_type_list[4], 8));
+	character_list[2].addSummon(Summon(summon_type_list[0], 10));
 }
 
 
 void Game::doLogic()
 {
+	//EVENT PHASE
 
 	sf::Event event;
 
@@ -111,7 +114,8 @@ void Game::doLogic()
 			{
 				if(event.key.code == sf::Keyboard::Escape)
 				{
-					pause();
+					state = MENU;
+					if(!paused) pause();
 				}
 				else if(event.key.code == sf::Keyboard::Z)
 				{
@@ -122,6 +126,7 @@ void Game::doLogic()
 			{
 				if(event.key.code == sf::Keyboard::Escape)
 				{
+					state = GAME;
 					resume();
 				}
 				else if(event.key.code == sf::Keyboard::Up)
@@ -184,25 +189,39 @@ void Game::doLogic()
 		}
 	}
 
-	if(state == GAME)
+	if(!paused)
 	{
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		if(state == GAME)
 		{
-			moveCharacter(player, LEFT);
-		}
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-			moveCharacter(player, RIGHT);
-		}
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-		{
-			moveCharacter(player, UP);
-		}
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-		{
-			moveCharacter(player, DOWN);
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			{
+				moveCharacter(player, LEFT);
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			{
+				moveCharacter(player, RIGHT);
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			{
+				moveCharacter(player, UP);
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			{
+				moveCharacter(player, DOWN);
+			}
 		}
 	}
+
+	//EVENT END
+
+
+	//LOGIC PHASE
+
+	std::stringstream ss1;
+	ss1 << player->getX() << " " << player->getY() << " " << player->getNewX() << " " << player->getNewY();
+	message = ss1.str();
+
+	if(paused) return;
 
 	if(state == GAME)
 	{
@@ -218,7 +237,7 @@ void Game::doLogic()
 			case UP: attention_tile.y--; break;
 			case DOWN: attention_tile.y++; break;
 		}
-		for(int i = 0; i < (int)character_list.size(); i++)
+		if(!paused) for(int i = 0; i < (int)character_list.size(); i++)
 		{
 			Character* c_char = &character_list[i];
 			c_char->onLoop();
@@ -245,11 +264,17 @@ void Game::doLogic()
 	{
 
 	}
+
+	//LOGIC END
 }
 
 void Game::draw()
 {
 	window.clear();
+
+	//DRAW PHASE
+
+	//draw on game screen
 	if(state == GAME)
 	{
 		Level* current_level = &level_list[player->getLevelID()];
@@ -369,6 +394,7 @@ void Game::draw()
 
 	}
 
+	//draw on bottom screen
 	if(state == GAME)
 	{
 		sf::RectangleShape interface(sf::Vector2f(GAME_WIDTH, 100));
@@ -396,6 +422,8 @@ void Game::draw()
 			window.draw(text);
 		}
 	}
+
+	//DRAW END
 
 	window.display();
 }
@@ -426,6 +454,7 @@ void Game::restart()
 	character_list[0].addSummon(Summon(summon_type_list[3], 5));
 	character_list[0].addSummon(Summon(summon_type_list[2], 6));
 	character_list[1].addSummon(Summon(summon_type_list[4], 8));
+	character_list[2].addSummon(Summon(summon_type_list[0], 10));
 	
 	message = "";
 	opponent = NULL;
@@ -433,6 +462,7 @@ void Game::restart()
 
 void Game::moveCharacter(Character* character, Direction dir)
 {
+	if(paused) return;
 	if(character->isWalking()) return;
 	character->setWalkingDirection(dir);
 	sf::Vector2f new_pos(character->getX(), character->getY());
@@ -449,6 +479,7 @@ void Game::moveCharacter(Character* character, Direction dir)
 		if(character->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getX() && new_pos.y == character_list[i].getY()) return;
 		if(character->getLevelID() == character_list[i].getLevelID() && new_pos.x == character_list[i].getNewX() && new_pos.y == character_list[i].getNewY()) return;
 	}
+
 	character->move(sf::Vector2f(new_pos.x, new_pos.y));
 }
 
@@ -459,7 +490,7 @@ void Game::interact()
 		if(player == &character_list[i]) continue;
 		if(character_list[i].getX() == attention_tile.x && character_list[i].getY() == attention_tile.y)
 		{
-			message = character_list[i].getName() + ": " + character_list[i].getMessage();
+			//message = character_list[i].getName() + ": " + character_list[i].getMessage();
 			Character* npc = &character_list[i];
 			
 			if(npc->isWalking() == false)
@@ -484,23 +515,25 @@ void Game::engageInBattle(Character* npc)
 	battle_state = NORMAL;
 	opponent = npc;
 
+	pause();
 
 }
 
 void Game::pause()
 {
-	state = MENU;
+	paused = true;
 	for(int i = 0; i < (int)character_list.size(); i++)
 	{
-		character_list[i].pauseTimers();
+		character_list[i].pause();
 	}
+
 }
 
 void Game::resume()
 {
-	state = GAME;
+	paused = false;
 	for(int i = 0; i < (int)character_list.size(); i++)
 	{
-		character_list[i].resumeTimers();
+		character_list[i].resume();
 	}
 }

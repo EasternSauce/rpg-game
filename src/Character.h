@@ -26,6 +26,8 @@ private:
 	sf::Vector2f shift;
 	std::vector<Summon> summons;
 	int current_summon;
+	bool paused_anim_timer;
+	bool paused_walk_timer;
 public:
 	Character(sf::Vector2f pos, int level_id, std::string name);
 	int getNewX();
@@ -45,8 +47,8 @@ public:
 	void onLoop();
 	void move(sf::Vector2f new_pos);
 	void teleport(sf::Vector2f pos, int level_id);
-	void pauseTimers();
-	void resumeTimers();
+	void pause();
+	void resume();
 	void addSummon(Summon summon);
 	Summon* getSummon();
 	Summon* getSummon(int id);
